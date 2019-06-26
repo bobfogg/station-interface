@@ -3,6 +3,109 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     title= title
     link(rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" type="text/css")
     link(rel="stylesheet" href="/stylesheets/style.css" type="text/css")
-  body
-    h1 CTT Sensor Station Overview 
-    script(src="/bootstrap/js/bootstrap.min.js" type="javascript")
+  body(style="font-size:0.8em;background-color: #333")
+    div(class="row")
+      div(class="col-sm")
+        h1 CTT Sensor Station Overview 
+        table(class="table table-bordered table-sm table-dark" id="beeps")
+          tr
+            th Date
+            th Channel
+            th Tag ID
+            th RSSI
+
+        h1 Sensor Station Log
+        textarea(class="form-control",id="raw_log", rows="25", cols="100", style="font-family:monospace")
+      div(class="col-sm")
+        div(class="row")
+          h1 GPS
+          table(class="table table-bordered table-sm table-dark")
+            tr
+              th Time
+              td
+                span(id="time")
+            tr
+              th Number of Satellites
+              td
+                span(id="nsats")
+            tr
+              th Latitude
+              td
+                span(id="lat")
+            tr
+              th Longitude
+              td
+                span(id="lng")
+            tr
+              th Altitude
+              td
+                span(id="alt")
+            tr
+              th Track
+              td
+                span(id="track")
+            tr
+              th Climb 
+              td
+                span(id="climb")
+            tr
+              th Speed
+              td
+                span(id="speed")
+
+            tr
+              th EPX
+              td
+                span(id="epx")
+            tr
+              th EPY
+              td
+                span(id="epy")
+            tr
+              th EPV
+              td
+                span(id="epv")
+            tr
+              th EPT
+              td
+                span(id="ept")
+            tr
+              th EPS
+              td
+                span(id="eps")
+
+            tr
+              th VDOP
+              td
+                span(id="vdop")
+            tr
+              th XDOP
+              td
+                span(id="xdop")
+            tr
+              th YDOP
+              td
+                span(id="ydop")
+            tr
+              th PDOP
+              td
+                span(id="pdop")
+            tr
+              th TDOP
+              td
+                span(id="tdop")
+            tr
+              th HDOP
+              td
+                span(id="hdop")
+            tr
+              th GDOP
+              td
+                span(id="Gdop")
+          h2 Raw GPS
+          textarea(class="form-control" rows=25, cols=50, id="raw-gps")
+
+
+    script(src="https://d3js.org/d3.v5.min.js")
+    script(src="/bootstrap/js/bootstrap.min.js")
+    script(src="/javascripts/interface.js")
