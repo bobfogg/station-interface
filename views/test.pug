@@ -4,108 +4,232 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     link(rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" type="text/css")
     link(rel="stylesheet" href="/stylesheets/style.css" type="text/css")
   body(style="font-size:0.8em;background-color: #333")
+    h1(style="text-align: center;") CTT Sensor Station Overview
     div(class="row")
-      div(class="col-sm")
-        h1 CTT Sensor Station Overview 
-        table(class="table table-bordered table-sm table-dark" id="beeps")
-          tr
-            th Date
-            th Channel
-            th Tag ID
-            th RSSI
-
-        h1 Sensor Station Log
-        textarea(class="form-control",id="raw_log", rows="25", cols="100", style="font-family:monospace")
-      div(class="col-sm")
-        div(class="row")
-          h1 GPS
-          table(class="table table-bordered table-sm table-dark")
-            tr
+      div(class="col-lg-8")
+        h2 Sensor Station Log
+        div(style="overflow: scroll; height:400px;")
+          table(class="table table-bordered table-sm table-dark" id="raw_log")
+            tr(class="table-primary", style="color:#111") 
               th Time
-              td
-                span(id="time")
-            tr
-              th Number of Satellites
-              td
-                span(id="nsats")
-            tr
-              th Latitude
-              td
-                span(id="lat")
-            tr
-              th Longitude
-              td
-                span(id="lng")
-            tr
-              th Altitude
-              td
-                span(id="alt")
-            tr
-              th Track
-              td
-                span(id="track")
-            tr
-              th Climb 
-              td
-                span(id="climb")
-            tr
-              th Speed
-              td
-                span(id="speed")
+              th Message
+        div(class="row")
+          div(class="col-sm")
+            h2 Nodes
+            div(style="overflow: scroll; height:400px;")
+              table(class="table table-bordered table-sm table-dark" id="nodes")
+                tr(class="table-primary", style="color:#111") 
+                  th Node ID
+                  th Last Heard
+                  th RSSI
+                  th Battery
+          div(class="col-sm")
+            h2 Tags
+            div(style="overflow: scroll; height:400px;")
+              table(class="table table-bordered table-sm table-dark" id="tags")
+                tr(class="table-primary", style="color:#111") 
+                  th Tag ID
+                  th Count
 
-            tr
-              th EPX
-              td
-                span(id="epx")
-            tr
-              th EPY
-              td
-                span(id="epy")
-            tr
-              th EPV
-              td
-                span(id="epv")
-            tr
-              th EPT
-              td
-                span(id="ept")
-            tr
-              th EPS
-              td
-                span(id="eps")
-
-            tr
-              th VDOP
-              td
-                span(id="vdop")
-            tr
-              th XDOP
-              td
-                span(id="xdop")
-            tr
-              th YDOP
-              td
-                span(id="ydop")
-            tr
-              th PDOP
-              td
-                span(id="pdop")
-            tr
-              th TDOP
-              td
-                span(id="tdop")
-            tr
-              th HDOP
-              td
-                span(id="hdop")
-            tr
-              th GDOP
-              td
-                span(id="Gdop")
-          h2 Raw GPS
-          textarea(class="form-control" rows=25, cols=50, id="raw-gps")
+      div(class="col-lg-4")
+        h2 Station
+        table(class="table table-bordered table-sm table-dark")
+          tr
+            th ID
+            td
+              span(id="station-id")
+          tr
+            th Compute Module Serial
+            td
+              span(id="serial")
+          tr
+            th Module Hardware
+            td
+              span(id="hardware")
+          tr
+            th Module Revision
+            td
+              span(id="revision")
+          tr
+            th Boot Count
+            td
+              span(id="bootcount")
 
 
+        h2 GPS
+        table(class="table table-bordered table-sm table-dark")
+          tr
+            th Time
+            td
+              span(id="time")
+          tr
+            th Number of Satellites
+            td
+              span(id="nsats")
+          tr
+            th Latitude
+            td
+              span(id="lat")
+          tr
+            th Longitude
+            td
+              span(id="lng")
+          tr
+            th Altitude
+            td
+              span(id="alt")
+          tr
+            th Track
+            td
+              span(id="track")
+          tr
+            th Climb 
+            td
+              span(id="climb")
+          tr
+            th Speed
+            td
+              span(id="speed")
+
+          tr
+            th EPX
+            td
+              span(id="epx")
+          tr
+            th EPY
+            td
+              span(id="epy")
+          tr
+            th EPV
+            td
+              span(id="epv")
+          tr
+            th EPT
+            td
+              span(id="ept")
+          tr
+            th EPS
+            td
+              span(id="eps")
+
+          tr
+            th VDOP
+            td
+              span(id="vdop")
+          tr
+            th XDOP
+            td
+              span(id="xdop")
+          tr
+            th YDOP
+            td
+              span(id="ydop")
+          tr
+            th PDOP
+            td
+              span(id="pdop")
+          tr
+            th TDOP
+            td
+              span(id="tdop")
+          tr
+            th HDOP
+            td
+              span(id="hdop")
+          tr
+            th GDOP
+            td
+              span(id="Gdop")
+    div(class="row")
+      div(class="col-lg")
+        h2(style="text-align:center;") Radio 1
+        div(style="overflow: scroll; height:400px;")
+          table(class="table table-sm table-bordered table-dark", id="radio_1")
+            tr(class="table-primary", style="color: #111;")
+              th Time
+              th Tag ID
+              th RSSI
+              th Node
+        div(class="row")
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="1") Node
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="1") Tag
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="1") Cornell
+
+      div(class="col-lg")
+        h2(style="text-align:center;")  Radio 2
+        div(style="overflow: scroll; height:400px;")
+          table(class="table table-sm table-bordered table-dark", id="radio_2")
+            tr(class="table-primary", style="color: #111;")
+              th Time
+              th Tag ID
+              th RSSI
+              th Node
+        div(class="row")
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="2") Node
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="2") Tag
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="2") Cornell
+
+      div(class="col-lg")
+        h2(style="text-align:center;")  Radio 3
+        div(style="overflow: scroll; height:400px;")
+          table(class="table table-sm table-bordered table-dark", id="radio_3")
+            tr(class="table-primary", style="color: #111;")
+              th Time
+              th Tag ID
+              th RSSI
+              th Node
+        div(class="row")
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="3") Node
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="3") Tag
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="3") Cornell
+
+      div(class="col-lg")
+        h2(style="text-align:center;")  Radio 4
+        div(style="overflow: scroll; height:400px;")
+          table(class="table table-sm table-bordered table-dark", id="radio_4")
+            tr(class="table-primary", style="color: #111;")
+              th Time
+              th Tag ID
+              th RSSI
+              th Node
+        div(class="row")
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="4") Node
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="4") Tag
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="4") Cornell
+
+      div(class="col-lg")
+        h2(style="text-align:center;")  Radio 5
+        div(style="overflow: scroll; height:400px;")
+          table(class="table table-sm table-bordered table-dark", id="radio_5")
+            tr(class="table-primary", style="color: #111;")
+              th Time
+              th Tag ID
+              th RSSI
+              th Node
+        div(class="row")
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="5") Node
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="5") Tag
+          div(class="col-sm")
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="5") Cornell
+
+    a(href='#', id="sg_link") Sensorgnome link
+
+    script(src="https://code.jquery.com/jquery-3.4.1.min.js")
+    script(src="/javascripts/moment-with-locales.min.js")
     script(src="https://d3js.org/d3.v5.min.js")
     script(src="/bootstrap/js/bootstrap.min.js")
     script(src="/javascripts/interface.js")
