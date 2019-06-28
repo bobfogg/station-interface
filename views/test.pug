@@ -2,6 +2,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
   head
     title= title
     link(rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" type="text/css")
+    link(rel="stylesheet" href="/javascripts/highcharts/code/css/highcharts-dark-unica.css" type="text/css")
     link(rel="stylesheet" href="/stylesheets/style.css" type="text/css")
   body(style="font-size:0.8em;background-color: #333")
     h1(style="text-align: center;") CTT Sensor Station Overview
@@ -23,6 +24,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
                   th Last Heard
                   th RSSI
                   th Battery
+                  th Firmware
           div(class="col-sm")
             h2 Tags
             div(style="overflow: scroll; height:400px;")
@@ -30,6 +32,10 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
                 tr(class="table-primary", style="color:#111") 
                   th Tag ID
                   th Count
+                  th Alias
+                  th 
+
+            div(style="min-height:250px;", id="tag_hist")
 
       div(class="col-lg-4")
         h2 Station
@@ -54,6 +60,21 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             th Boot Count
             td
               span(id="bootcount")
+          tr
+            th Total Memory
+            td
+              span(id="memory")
+          tr
+            th Last Boot
+            td
+              span(id="uptime")
+        div(class="row")
+          div(class="col-sm")
+            h3 Memory Usage
+            div(id="mem-chart", style="min-height=75px;")
+          div(class="col-sm")
+            h3 CPU Usage
+            div(id="cpu-chart", style="min-height=75px;")
 
 
         h2 GPS
@@ -78,68 +99,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             th Altitude
             td
               span(id="alt")
-          tr
-            th Track
-            td
-              span(id="track")
-          tr
-            th Climb 
-            td
-              span(id="climb")
-          tr
-            th Speed
-            td
-              span(id="speed")
 
-          tr
-            th EPX
-            td
-              span(id="epx")
-          tr
-            th EPY
-            td
-              span(id="epy")
-          tr
-            th EPV
-            td
-              span(id="epv")
-          tr
-            th EPT
-            td
-              span(id="ept")
-          tr
-            th EPS
-            td
-              span(id="eps")
-
-          tr
-            th VDOP
-            td
-              span(id="vdop")
-          tr
-            th XDOP
-            td
-              span(id="xdop")
-          tr
-            th YDOP
-            td
-              span(id="ydop")
-          tr
-            th PDOP
-            td
-              span(id="pdop")
-          tr
-            th TDOP
-            td
-              span(id="tdop")
-          tr
-            th HDOP
-            td
-              span(id="hdop")
-          tr
-            th GDOP
-            td
-              span(id="Gdop")
     div(class="row")
       div(class="col-lg")
         h2(style="text-align:center;") Radio 1
@@ -232,4 +192,5 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     script(src="/javascripts/moment-with-locales.min.js")
     script(src="https://d3js.org/d3.v5.min.js")
     script(src="/bootstrap/js/bootstrap.min.js")
+    script(src="/javascripts/highcharts/code/highcharts.js")
     script(src="/javascripts/interface.js")

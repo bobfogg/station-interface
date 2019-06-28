@@ -2,6 +2,7 @@ const beeps = [];
 const tags = new Set();
 const nodes = {};
 const beep_hist = {};
+let e;
 
 const DATE_FMT = 'YYYY-MM-DD HH:mm:ss';
 let socket;
@@ -63,7 +64,12 @@ const handle_beep = function(beep) {
   let td = document.createElement('td');
   td.textContent = rx_dt;
   tr.appendChild(td);
-  tr.appendChild(createElement(beep.tag_id));
+  let alias = localStorage.getItem(beep.tag_id);
+  if (alias) {
+    tr.appendChild(createElement(alias));
+  } else {
+    tr.appendChild(createElement(beep.tag_id));
+  }
   tr.appendChild(createElement(beep.rssi));
   tr.appendChild(createElement(beep.node_id));
   BEEP_TABLE.insertBefore(tr, BEEP_TABLE.firstChild.nextSibling);
@@ -82,6 +88,30 @@ const handle_beep = function(beep) {
     td.setAttribute('id','cnt_'+beep.tag_id);
     td.textContent = beep_hist[beep.tag_id];
     tr.appendChild(td);
+    let input = document.createElement('input');
+    input.setAttribute('type', 'text');
+    input.setAttribute('class', 'form-input');
+    let alias = localStorage.getItem(beep.tag_id);
+    if (alias) {
+      input.setAttribute('value', alias);
+    }
+    td = document.createElement('td');
+    td.appendChild(input);
+    tr.appendChild(td);
+    td = document.createElement('td');
+    let button = document.createElement('button');
+    button.setAttribute('class', 'btn btn-sm btn-primary tag-alias');
+    button.textContent='update';
+    button.setAttribute('value', beep.tag_id);
+    button.addEventListener('click', (evt) => {
+      let tag_id = evt.target.getAttribute('value');
+      let alias = evt.target.parentElement.previousSibling.firstChild.value;
+      e = evt;
+      console.log('setting alias', alias);
+      localStorage.setItem(tag_id, alias);
+    });
+    td.appendChild(button);
+    tr.appendChild(td);
     TAG_TABLE.appendChild(tr);
     //TAG_TABLE.insertBefore(tr, TAG_TABLE.firstChild.nextSibling);
   }
@@ -96,7 +126,7 @@ const createElement = function(text) {
 const handle_node_alive = function(node_alive_msg) {
   let NODE_TABLE = document.querySelector('#nodes');
   let tr, td;
-  node_alive_msg.received_at = new Date();
+  node_alive_msg.received_at = new Date(node_alive_msg.received_at);
   let node_id = node_alive_msg.node_id;
   nodes[node_id] = node_alive_msg;
   var items = Object.keys(nodes).map(function(key) {
@@ -125,13 +155,12 @@ const handle_node_alive = function(node_alive_msg) {
     tr.appendChild(td);
     td = createElement(node_alive.battery);
     tr.appendChild(td);
-    td = createElement(node_alive.firmware);
+    tr.appendChild(createElement(node_alive.firmware));
     NODE_TABLE.insertBefore(tr, NODE_TABLE.firstChild.nextSibling);
   });
-  console.log(node_alive_msg);
   let BEEP_TABLE = document.querySelector('#radio_'+node_alive_msg.channel);
   tr = document.createElement('tr');
-  td = createElement(moment(node_alive_msg.received_at).format(DATE_FMT));
+  td = createElement(moment(node_alive_msg.received_at).utc().format(DATE_FMT));
   tr.appendChild(td);
   td = document.createElement('td');
   td.setAttribute('class', 'table-success');
@@ -141,6 +170,111 @@ const handle_node_alive = function(node_alive_msg) {
   tr.appendChild(td);
   tr.appendChild(createElement(node_id));
   BEEP_TABLE.insertBefore(tr,BEEP_TABLE.firstChild.nextSibling);
+};
+
+const render_pie = function(id, data) {
+  $(id).highcharts({
+    chart: {
+      backgroundColor: '#FcFFC5',
+      type: 'pie'
+    },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          enabled: false
+        }
+      }
+    },
+    title: {
+      text: ''
+    },
+    credits: {
+      enabled: false
+    },
+    series: data
+  });
+};
+
+const render_mem_chart = function(free, used) {
+  let data = [{
+    name: 'Memory Usage',
+    data: [{
+      name: 'Free',
+      y: free
+    },{
+      name: 'Used',
+      y: used
+    }]
+  }];
+  render_pie('#mem-chart', data);
+};
+
+const render_cpu_chart = function(load_avg) {
+  let data = [{
+    name: 'Memory Usage',
+    data: [{
+      name: 'Load Percent',
+      y: load_avg*100, 
+    },{
+      name: 'Free CPU',
+      y: (1-load_avg)*100 
+    }]
+  }];
+  render_pie('#cpu-chart', data);
+};
+
+const render_tag_hist = function() {
+  setInterval(function() {
+    let tag_ids = [];
+    let sorted_keys = Object.keys(beep_hist).sort(function(a,b) {
+      if (a < b) {
+        return -1;
+      }
+      return 1;
+    });
+    sorted_keys.forEach(function(tag_id) {
+      let alias = localStorage.getItem(tag_id);
+      if (alias) {
+        tag_ids.push(alias);
+      } else {
+        tag_ids.push(tag_id);
+      }
+    });
+
+    let values = [];
+    sorted_keys.forEach((tag) => {
+      values.push(beep_hist[tag]);
+    });
+
+    $('#tag_hist').highcharts({
+      chart: {
+        type: 'column'
+      },
+      title: {
+        text: ''
+      },
+      xAxis: {
+        categories: tag_ids,
+        crosshair: true
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: 'Count'
+        }
+      },
+      credits: {
+        enabled: false
+      },
+      legend: {
+        enabled: false
+      },
+      series: [{
+        name: 'Hist',
+        data: values
+      }]
+    });
+  }, 10000);
 };
 
 let RAW_LOG;
@@ -170,6 +304,13 @@ const initialize_websocket = function() {
       document.querySelector('#hardware').textContent = about.hardware;
       document.querySelector('#revision').textContent = about.revision;
       document.querySelector('#bootcount').textContent = about.bootcount;
+      let total = Math.round(about.total_mem / 1024 / 1024.0);
+      let free = Math.round(about.free_mem/ 1024/1024.0);
+      let used = total - free;
+      render_mem_chart(free, used);
+      render_cpu_chart(about.loadavg_15min);
+      setText('memory',  used+' MB of '+total+' MB used');
+      setText('uptime', moment(new Date()).subtract(about.uptime, 's'));
       break;
     case('log'):
       tr = document.createElement('tr');
@@ -189,23 +330,6 @@ const initialize_websocket = function() {
       setText('lng', data.lon.toFixed(6));
       setText('time', moment(new Date(data.time)).format(DATE_FMT));
       setText('alt', data.alt);
-      setText('vdop', data.vdop);
-      setText('xdop', data.xdop);
-      setText('ydop', data.ydop);
-      setText('pdop', data.pdop);
-      setText('tdop', data.tdop);
-      setText('hdop', data.hdop);
-      setText('gdop', data.gdop);
-
-      setText('epx', data.epx);
-      setText('epy', data.epy);
-      setText('epv', data.epv);
-      setText('ept', data.ept);
-      setText('eps', data.eps);
-
-      setText('track', data.track);
-      setText('speed', data.speed);
-      setText('climb', data.climb);
       let n = 0;
       data.satellites.forEach((sat) => {
         if (sat.used == true) n += 1;
@@ -230,5 +354,6 @@ const initialize_websocket = function() {
   });
   initialize_websocket();
   initialize_controls();
+  render_tag_hist();
   RAW_LOG = document.querySelector('#raw_log');
 })();
