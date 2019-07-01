@@ -1,15 +1,35 @@
-const beeps = [];
-const tags = new Set();
-const nodes = {};
-const beep_hist = {};
-let e;
+let beeps = [];
+let tags = new Set();
+let nodes = {};
+let beep_hist = {};
 
 const DATE_FMT = 'YYYY-MM-DD HH:mm:ss';
 let socket;
+let sg_socket;
 
 const setText = function(tag, value) {
   let id = '#'+tag;
   document.querySelector(id).textContent = value;
+};
+
+const clear_table = function(table) {
+  while (table.firstChild.nextSibling) {
+    table.removeChild(table.firstChild.nextSibling);
+  }
+};
+
+const clear = function() {
+  beeps = [];
+  nodes = {};
+  tags.clear();
+  beep_hist = {};
+
+  document.querySelectorAll('.radio').forEach(function(radio_table)  {
+    console.log('about to clear', radio_table);
+    clear_table(radio_table);
+    clear_table(document.querySelector('#sg-data'));
+    clear_table(document.querySelector('#tags'));
+  });
 };
 
 const initialize_controls = function() {
@@ -52,9 +72,12 @@ const initialize_controls = function() {
       }));
     });
   });
-
+  document.querySelector('#clear').addEventListener('click', (evt) => {
+    clear();
+  });
 };
 
+let x;
 const handle_beep = function(beep) {
 
   let BEEP_TABLE = document.querySelector('#radio_'+beep.channel);
@@ -74,6 +97,7 @@ const handle_beep = function(beep) {
   tr.appendChild(createElement(beep.node_id));
   BEEP_TABLE.insertBefore(tr, BEEP_TABLE.firstChild.nextSibling);
   beeps.push(beep);
+  let beep_count = beep_hist[beep.tag_id];
   if (tags.has(beep.tag_id)) {
     beep_hist[beep.tag_id] += 1;
     document.querySelector('#cnt_'+beep.tag_id).textContent = beep_hist[beep.tag_id];
@@ -101,7 +125,7 @@ const handle_beep = function(beep) {
     td = document.createElement('td');
     let button = document.createElement('button');
     button.setAttribute('class', 'btn btn-sm btn-primary tag-alias');
-    button.textContent='update';
+    button.textContent='Update';
     button.setAttribute('value', beep.tag_id);
     button.addEventListener('click', (evt) => {
       let tag_id = evt.target.getAttribute('value');
@@ -112,6 +136,21 @@ const handle_beep = function(beep) {
     });
     td.appendChild(button);
     tr.appendChild(td);
+
+    button = document.createElement('button');
+    button.setAttribute('class', 'btn btn-sm btn-danger');
+    button.textContent='Remove';
+    button.addEventListener('click', (evt) => {
+      x = evt;
+      let row = evt.target.parentElement.parentElement;
+      let tag_id = row.firstChild.firstChild.textContent
+      tags.delete(tag_id);
+      row.remove();
+    });
+    td = document.createElement('td');
+    td.appendChild(button);
+    tr.appendChild(td);
+
     TAG_TABLE.appendChild(tr);
     //TAG_TABLE.insertBefore(tr, TAG_TABLE.firstChild.nextSibling);
   }
@@ -278,6 +317,33 @@ const render_tag_hist = function() {
 };
 
 let RAW_LOG;
+const initialize_sg_socket = function () {
+  let url = 'ws://'+window.location.hostname+':8002';
+  sg_socket = new WebSocket(url);
+  sg_socket.addEventListener('close', function(evt) {
+    alert('SG server disconnected');
+  });
+  sg_socket.addEventListener('open', function() {
+    console.log('opened sg socket');
+  });
+  sg_socket.addEventListener('message', function(msg) {
+    let records = msg.data.split('\n');
+    records.forEach(function(record) {
+      let vals = record.split(',');
+      if (vals.length == 5) {
+        let sg_table = document.querySelector('#sg-data');
+        let tr = document.createElement('tr');
+        let dt = moment(new Date(parseInt(vals[1]*1000)));
+        tr.appendChild(createElement(vals[0]));
+        tr.appendChild(createElement(dt.format(DATE_FMT)));
+        tr.appendChild(createElement(vals[2]));
+        tr.appendChild(createElement(vals[3]));
+        tr.appendChild(createElement(vals[4]));
+        sg_table.insertBefore(tr, sg_table.firstChild.nextSibling);
+      }
+    });
+  });
+};
 const initialize_websocket = function() {
   let url = 'ws://'+window.location.hostname+':8001';
   socket = new WebSocket(url);
@@ -353,6 +419,7 @@ const initialize_websocket = function() {
     return "hsl("+ Math.random() * 360 + ",100%,50%)";
   });
   initialize_websocket();
+  initialize_sg_socket();
   initialize_controls();
   render_tag_hist();
   RAW_LOG = document.querySelector('#raw_log');

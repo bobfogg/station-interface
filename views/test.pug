@@ -34,6 +34,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
                   th Count
                   th Alias
                   th 
+                  th 
 
             div(style="min-height:250px;", id="tag_hist")
 
@@ -71,10 +72,10 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
         div(class="row")
           div(class="col-sm")
             h3 Memory Usage
-            div(id="mem-chart", style="min-height=75px;")
+            div(id="mem-chart", style="height:150px;")
           div(class="col-sm")
             h3 CPU Usage
-            div(id="cpu-chart", style="min-height=75px;")
+            div(id="cpu-chart", style="height:150px;")
 
 
         h2 GPS
@@ -104,7 +105,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
       div(class="col-lg")
         h2(style="text-align:center;") Radio 1
         div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark", id="radio_1")
+          table(class="table table-sm table-bordered table-dark radio", id="radio_1")
             tr(class="table-primary", style="color: #111;")
               th Time
               th Tag ID
@@ -121,7 +122,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 2
         div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark", id="radio_2")
+          table(class="table table-sm table-bordered table-dark radio", id="radio_2")
             tr(class="table-primary", style="color: #111;")
               th Time
               th Tag ID
@@ -138,7 +139,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 3
         div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark", id="radio_3")
+          table(class="table table-sm table-bordered table-dark radio", id="radio_3")
             tr(class="table-primary", style="color: #111;")
               th Time
               th Tag ID
@@ -155,7 +156,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 4
         div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark", id="radio_4")
+          table(class="table table-sm table-bordered table-dark radio", id="radio_4")
             tr(class="table-primary", style="color: #111;")
               th Time
               th Tag ID
@@ -172,7 +173,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 5
         div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark", id="radio_5")
+          table(class="table table-sm table-bordered table-dark radio", id="radio_5")
             tr(class="table-primary", style="color: #111;")
               th Time
               th Tag ID
@@ -186,7 +187,22 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
           div(class="col-sm")
             button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="5") Cornell
 
-    a(href='#', id="sg_link") Sensorgnome link
+    button(class="btn btn-block btn-primary", id="clear") Clear Session Data
+
+    hr
+    h2(style="text-align:center;") Nanotag Data
+      div
+        a(href='#', id="sg_link", style="font-size:1em;") Sensorgnome Interface 
+    div(class="row")
+      div(style="overflow: scroll; height:400px;")
+        h2(style="text-align:center;") Live Pulses 
+        table(style="min-width:500px;" class="table table-sm table-bordered table-dark radio", id="sg-data")
+          tr(class="table-primary", style="color: #111;")
+            th Port
+            th Time 
+            th kHz
+            th dB
+            th dB
 
     script(src="https://code.jquery.com/jquery-3.4.1.min.js")
     script(src="/javascripts/moment-with-locales.min.js")
