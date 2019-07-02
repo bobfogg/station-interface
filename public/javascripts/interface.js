@@ -59,6 +59,13 @@ const initialize_controls = function() {
       }));
     });
   });
+  document.querySelector('#save-radios').addEventListener('click', (evt) => {
+    socket.send(JSON.stringify({
+      msg_type: 'cmd',
+      cmd: 'save_radio',
+      data: {}
+    }));
+  });
   document.querySelectorAll('button[name="toggle_cornell_radio"]').forEach((btn) => {
     btn.addEventListener('click', function(e) {
       let radio_id = e.target.getAttribute('value');
@@ -419,7 +426,7 @@ const initialize_websocket = function() {
     return "hsl("+ Math.random() * 360 + ",100%,50%)";
   });
   initialize_websocket();
-  initialize_sg_socket();
+  //initialize_sg_socket();
   initialize_controls();
   render_tag_hist();
   RAW_LOG = document.querySelector('#raw_log');
