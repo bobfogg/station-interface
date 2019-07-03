@@ -81,6 +81,21 @@ const initialize_controls = function() {
   document.querySelector('#clear').addEventListener('click', (evt) => {
     clear();
   });
+  document.querySelector('#clear-log').addEventListener('click', (evt) => {
+    let res = window.confirm('Are you sure you want to clear the log file?');
+    if (res) {
+      $.ajax({
+        url: '/clear-log',
+        method: 'post',
+        success: function(data) {
+          alert('Clear Log Success');
+        },
+        error: function(err) {
+          alert('error clearing log file', err);
+        }
+      });
+    }
+  });
   document.querySelectorAll('button[name="delete-data"]').forEach((btn) => {
     btn.addEventListener('click', (evt) => {
       let dataset = evt.target.value;
@@ -177,7 +192,6 @@ const handle_beep = function(beep) {
       let tag_id = evt.target.getAttribute('value');
       let alias = evt.target.parentElement.previousSibling.firstChild.value;
       e = evt;
-      console.log('setting alias', alias);
       localStorage.setItem(tag_id, alias);
     });
     td.appendChild(button);
@@ -464,7 +478,6 @@ const updateChrony = function() {
     url: '/chrony',
     method: 'get',
     success: function(data) {
-      console.log('got', data);
       document.querySelector('#chrony').textContent= data;
     },
     error: function(err) {
