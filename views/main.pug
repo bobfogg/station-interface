@@ -4,7 +4,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     link(rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" type="text/css")
     link(rel="stylesheet" href="/javascripts/highcharts/code/css/highcharts-dark-unica.css" type="text/css")
     link(rel="stylesheet" href="/stylesheets/style.css" type="text/css")
-  body(style="font-size:0.8em;background-color: #333")
+  body(style="font-size:0.8em;background-color: #333; color: #D1FF00;")
     h1(style="text-align: center;") CTT Sensor Station Overview
     div(class="row")
       div(class="col-lg-8")
@@ -77,6 +77,8 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             h3 CPU Usage
             div(id="cpu-chart", style="height:150px;")
 
+        h2(style="text-align:center;") Time Sync Stats
+        pre(style="min-height:100px;font-family:monospace; color:#EEE;font-size:1.2em;" id="chrony")
 
         h2 GPS
         table(class="table table-bordered table-sm table-dark")
@@ -117,7 +119,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
           div(class="col-sm")
             button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="1") Tag
           div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="1") Cornell
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="1") OOK
 
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 2
@@ -134,7 +136,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
           div(class="col-sm")
             button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="2") Tag
           div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="2") Cornell
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="2") OOK
 
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 3
@@ -151,7 +153,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
           div(class="col-sm")
             button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="3") Tag
           div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="3") Cornell
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="3") OOK
 
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 4
@@ -168,7 +170,7 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
           div(class="col-sm")
             button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="4") Tag
           div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="4") Cornell
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="4") OOK 
 
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 5
@@ -185,29 +187,54 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
           div(class="col-sm")
             button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="5") Tag
           div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="5") Cornell
+            button(class="btn btn-block btn-sm btn-danger" name="toggle_cornell_radio" value="5") OOK
 
+    div(style="height:5px;")
     button(class="btn btn-block btn-primary", id="save-radios") Save Radio Configuration
+
     button(class="btn btn-block btn-primary", id="clear") Clear Session Data
+    hr
+    h2(style="text-align:center") Data Management
+    div(class="row")
+      div(class="col-sm")
+        div(style="border: 1px solid white;padding:5px;")
+          h3(style="text-align:center;") CTT Tag Data
+          div(class="row")
+            div(class="col-sm")
+              a(class="btn btn-block btn-primary", href="/ctt-data-rotated") Download Data Not Uploaded
+            div(class="col-sm")
+              a(class="btn btn-block btn-primary", href="/ctt-data-uploaded") Download Data Already Uploaded
+          div(style="height:5px;")
+          div(class="row")
+            div(class="col-sm")
+              button(class="btn btn-danger btn-block" name="delete-data" value="ctt-rotated") Delete Data Not Uploaded
+            div(class="col-sm")
+              button(class="btn btn-danger btn-block" name="delete-data" value="ctt-uploaded") Delete Data Already Uploaded
+
+      div(class="col-sm")
+        div(style="border: 1px solid white;padding:5px;")
+          h3(style="text-align:center;") Nanotag Data
+          div(class="row")
+            div(class="col-sm")
+              a(class="btn btn-block btn-primary", href="/sg-data-rotated") Download Data Not Uploaded
+            div(class="col-sm")
+              a(class="btn btn-block btn-primary", href="/sg-data-uploaded") Download Data Already Uploaded
+          div(style="height:5px;")
+          div(class="row")
+            div(class="col-sm")
+              button(class="btn btn-danger btn-block" name="delete-data" value="sg-rotated") Delete Data Not Uploaded
+            div(class="col-sm")
+              button(class="btn btn-danger btn-block" name="delete-data" value="sg-uploaded") Delete Data Already Uploaded
 
     hr
     h2(style="text-align:center;") Nanotag Data
       div
         a(href='#', id="sg_link", style="font-size:1em;") Sensorgnome Interface 
     div(class="row")
-      div(style="overflow: scroll; height:400px;")
-        h2(style="text-align:center;") Live Pulses 
-        table(style="min-width:500px;" class="table table-sm table-bordered table-dark radio", id="sg-data")
-          tr(class="table-primary", style="color: #111;")
-            th Port
-            th Time 
-            th kHz
-            th dB
-            th dB
+      a(style="display:none;" class="btn btn-danger btn-block" id="reboot" href="/reboot") Reboot
 
-    script(src="https://code.jquery.com/jquery-3.4.1.min.js")
+    script(src="/javascripts/jquery-3.4.1.min.js")
     script(src="/javascripts/moment-with-locales.min.js")
-    script(src="https://d3js.org/d3.v5.min.js")
     script(src="/bootstrap/js/bootstrap.min.js")
     script(src="/javascripts/highcharts/code/highcharts.js")
     script(src="/javascripts/interface.js")

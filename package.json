@@ -16,9 +16,12 @@
     "cookie-parser": "^1.4.4",
     "debug": "^4.1.1",
     "express": "^4.16.4",
+    "glob": "^7.1.4",
+    "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "pug": "^2.0.3",
     "tail": "^2.0.2",
+    "tar": "^4.4.10",
     "ws": "^7.0.1"
   },
   "devDependencies": {

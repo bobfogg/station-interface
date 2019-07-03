@@ -27,7 +27,6 @@ const clear = function() {
   document.querySelectorAll('.radio').forEach(function(radio_table)  {
     console.log('about to clear', radio_table);
     clear_table(radio_table);
-    clear_table(document.querySelector('#sg-data'));
     clear_table(document.querySelector('#tags'));
   });
 };
@@ -81,6 +80,46 @@ const initialize_controls = function() {
   });
   document.querySelector('#clear').addEventListener('click', (evt) => {
     clear();
+  });
+  document.querySelectorAll('button[name="delete-data"]').forEach((btn) => {
+    btn.addEventListener('click', (evt) => {
+      let dataset = evt.target.value;
+      let result = window.confirm('Are you sure you want to delete all files for '+dataset);
+      let url;
+      if (result) {
+        switch(dataset) {
+          case('ctt-uploaded'):
+          url = '/delete-ctt-data-uploaded';
+          break;
+          case('ctt-rotated'):
+          url = '/delete-ctt-data-rotated';
+          break;
+          case('sg-uploaded'):
+          url = '/delete-sg-data-uploaded';
+          break;
+          case('sg-rotated'):
+          url = '/delete-sg-data-rotated';
+          break;
+          default:
+            alert('invalid dataset to delete');
+        }
+        console.log('about to delete files!', url);
+        $.ajax({
+          url: url,
+          method: 'post',
+          success: function(data) {
+            if (data.res) {
+              alert('delete success');
+            }
+          },
+          error: function(err) {
+            alert('error deleting files', err);
+          }
+        });
+        return;
+      } 
+      console.log('abort delete');
+    });
   });
 };
 
@@ -420,14 +459,27 @@ const initialize_websocket = function() {
   };
 };
 
-(function() {
-  document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname);
-  d3.selectAll("body").transition().style("color", () => {
-    return "hsl("+ Math.random() * 360 + ",100%,50%)";
+const updateChrony = function() {
+  $.ajax({
+    url: '/chrony',
+    method: 'get',
+    success: function(data) {
+      console.log('got', data);
+      document.querySelector('#chrony').textContent= data;
+    },
+    error: function(err) {
+      console.error(err);
+    }
   });
+};
+
+(function() {
+  document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3000');
   initialize_websocket();
   //initialize_sg_socket();
   initialize_controls();
   render_tag_hist();
   RAW_LOG = document.querySelector('#raw_log');
+  updateChrony();
+  setInterval(updateChrony, 10000);
 })();
