@@ -248,7 +248,7 @@ const handle_node_alive = function(node_alive_msg) {
     tr = document.createElement('tr');
     td = createElement(node_id.toString());
     tr.appendChild(td);
-    td = createElement(moment(node_alive.received_at).format(DATE_FMT));
+    td = createElement(moment(node_alive.received_at).utc().format(DATE_FMT));
     tr.appendChild(td);
     td = createElement(node_alive.rssi);
     tr.appendChild(td);
