@@ -97,9 +97,7 @@ const initialize_controls = function() {
     }
   });
   document.querySelector('#save-deployment').addEventListener('click', (evt) => {
-    console.log('about to save deployment data');
     let data = document.querySelector('#sg-deployment');
-    console.log(data.value);
     $.ajax({
       url: '/save-sg-deployment',
       method: 'post',
@@ -136,7 +134,6 @@ const initialize_controls = function() {
           default:
             alert('invalid dataset to delete');
         }
-        console.log('about to delete files!', url);
         $.ajax({
           url: url,
           method: 'post',
@@ -151,7 +148,6 @@ const initialize_controls = function() {
         });
         return;
       } 
-      console.log('abort delete');
     });
   });
 };
@@ -327,9 +323,9 @@ const render_mem_chart = function(free, used) {
 
 const render_cpu_chart = function(load_avg) {
   let data = [{
-    name: 'Memory Usage',
+    name: '15 Minute CPU Load Average',
     data: [{
-      name: 'Load Percent',
+      name: 'Used',
       y: load_avg*100, 
     },{
       name: 'Free CPU',
@@ -401,7 +397,6 @@ const initialize_sg_socket = function () {
     alert('SG server disconnected');
   });
   sg_socket.addEventListener('open', function() {
-    console.log('opened sg socket');
   });
   sg_socket.addEventListener('message', function(msg) {
     let records = msg.data.split('\n');
@@ -421,6 +416,13 @@ const initialize_sg_socket = function () {
     });
   });
 };
+const updateStats = function() {
+  socket.send(JSON.stringify({
+    msg_type: 'cmd',
+    cmd: 'about'
+  }));
+};
+
 const initialize_websocket = function() {
   let url = 'ws://'+window.location.hostname+':8001';
   socket = new WebSocket(url);
@@ -428,10 +430,8 @@ const initialize_websocket = function() {
     alert('station connection disconnected');
   });
   socket.addEventListener('open', (event) => {
-    socket.send(JSON.stringify({
-      msg_type: 'cmd',
-      cmd: 'about'
-    }));
+    updateStats();
+    setInterval(updateStats, 10000);
   });
   socket.onmessage = function(msg) {
     let data = JSON.parse(msg.data);
