@@ -91,10 +91,28 @@ const initialize_controls = function() {
           alert('Clear Log Success');
         },
         error: function(err) {
-          alert('error clearing log file', err);
+          alert('error clearing log file', err.toString());
         }
       });
     }
+  });
+  document.querySelector('#save-deployment').addEventListener('click', (evt) => {
+    console.log('about to save deployment data');
+    let data = document.querySelector('#sg-deployment');
+    console.log(data.value);
+    $.ajax({
+      url: '/save-sg-deployment',
+      method: 'post',
+      data: {
+        contents: data.value
+      },
+      success: function(data) {
+        alert('saved sg deployment file to disk');
+      },
+      error: function(err) {
+        alert('error saving sg deployment file '+err.toString());
+      }
+    });
   });
   document.querySelectorAll('button[name="delete-data"]').forEach((btn) => {
     btn.addEventListener('click', (evt) => {
@@ -128,7 +146,7 @@ const initialize_controls = function() {
             }
           },
           error: function(err) {
-            alert('error deleting files', err);
+            alert('error deleting files', err.toString());
           }
         });
         return;
@@ -138,7 +156,6 @@ const initialize_controls = function() {
   });
 };
 
-let x;
 const handle_beep = function(beep) {
 
   let BEEP_TABLE = document.querySelector('#radio_'+beep.channel);
@@ -495,4 +512,10 @@ const updateChrony = function() {
   RAW_LOG = document.querySelector('#raw_log');
   updateChrony();
   setInterval(updateChrony, 10000);
+  $.ajax({
+    url: '/sg-deployment',
+    success: function(contents) {
+      document.querySelector('#sg-deployment').value = contents;
+    }
+  });
 })();

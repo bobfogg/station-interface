@@ -13,6 +13,8 @@
   "author": "Bob Fogg",
   "license": "ISC",
   "dependencies": {
+    "archiver": "^3.0.0",
+    "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
     "debug": "^4.1.1",
     "express": "^4.16.4",

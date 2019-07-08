@@ -231,8 +231,19 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
 
     hr
     h2(style="text-align:center;") Nanotag Data
-      div
-        a(href='#', id="sg_link", style="font-size:1em;") Sensorgnome Interface 
+    div(style="text-align:center;")
+      a(href='#', id="sg_link", style="font-size:3em;") Sensorgnome Interface 
+    div(class="row")
+      div(class="col-sm")
+        div(style="text-align:center;")
+          h3 Deployment File
+          textarea(cols="90", rows="50", id="sg-deployment")
+    div(style="height:10px;")
+    div(class="row")
+      div(class="col-sm")
+        div(style="text-align:center;")
+          button(class="btn btn-danger" id="save-deployment") Save Changes
+
     div(class="row")
       a(style="display:none;" class="btn btn-danger btn-block" id="reboot" href="/reboot") Reboot
 

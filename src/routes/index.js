@@ -1,10 +1,14 @@
 import express from 'express';
+import { readSync } from 'fs';
 const router = express.Router();
 const glob = require('glob');
 const fs = require('fs');
-const tar = require('tar');
 const moment = require('moment');
 const { spawn }  = require('child_process');
+const archiver = require('archiver');
+
+const TMP_FILE = '/tmp/download.zip';
+const SG_DEPLOYMENT_FILE = '/data/sg_files/deployment.txt'
 
 router.get('/', function(req, res, next) {
   res.render('main', {title: 'CTT Sensor Station', message: 'pug' });
@@ -15,101 +19,109 @@ router.get('/crash', (req, res, next) => {
   throw(Error('throwing crash error'));
 });
 
+router.get('/sg-deployment', (req,res,next) => {
+  fs.readFile(SG_DEPLOYMENT_FILE, (err, contents) => {
+    if (err) {
+      next(err);
+    } else { 
+      res.send(contents);
+    }
+  });
+});
+
+router.post('/save-sg-deployment', (req, res, next) => {
+  fs.writeFile(SG_DEPLOYMENT_FILE, req.body.contents, (err) => {
+    if (err) {
+      next(err);
+    } else {
+      console.log('saved data');
+      res.json({res: true});
+    }
+  });
+});
+
+const prepareData = (filelist) => {
+  return new Promise((resolve, reject) => {
+    if (fs.existsSync(TMP_FILE)) {
+      fs.unlinkSync(TMP_FILE);
+    }
+    let output = fs.createWriteStream(TMP_FILE);
+    output.on('close', () => {
+      resolve(true);
+    });
+    output.on('error', (err) => {
+      reject(err);
+    });
+    var archive = archiver('zip', {
+      zlip: { level: 9 }
+    });
+    archive.on('error', (err) => {
+      reject(err);
+    });
+    archive.pipe(output);
+    filelist.forEach((filename) => {
+      archive.file(filename, { name: filename});
+    });
+    archive.finalize();
+  });
+};
+
 router.get('/sg-data-rotated', function(req, res, next) {
-  glob('/data/SGdata/*/*.gz', (err, sg_files) => {
-    if (sg_files.length < 1) {
+  glob('/data/SGdata/*/*.gz', (err, filelist) => {
+    if (filelist.length < 1) {
       res.send('Nothing to download yet');
+      return;
     }
-    let tmp_file = '/tmp/download.tgz';
-    if (fs.existsSync(tmp_file)) {
-      fs.unlinkSync(tmp_file);
-    }
-    tar.c({
-      gzip: true,
-      file: tmp_file
-    },
-    sg_files).then(() => {
-      let download_name = `sg-data-rotated.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.tgz`;
-      res.download(tmp_file, download_name);
+    prepareData(filelist).then((prepare_result) => {
+      let download_name = `sg-data-uploaded.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.zip`;
+      res.download(TMP_FILE, download_name);
     }).catch((err) => {
-      console.log('error sending file...');
-      console.error(err);
-      res.send('ERROR '+err);
+      res.send('ERROR processing download request '+err);
     });
   });
 });
 
 router.get('/sg-data-uploaded', function(req, res, next) {
-  glob('/data/uploaded/sg/*.gz', (err, uploaded_files) => {
-    if (uploaded_files.length < 1) {
+  glob('/data/uploaded/sg/*.gz', (err, filelist) => {
+    if (filelist.length < 1) {
       res.send('Nothing to download yet');
       return;
     }
-    let tmp_file = '/tmp/download.tgz';
-    if (fs.existsSync(tmp_file)) {
-      fs.unlinkSync(tmp_file);
-    }
-    tar.c({
-      gzip: true,
-      file: tmp_file
-    },
-    uploaded_files).then(() => {
-      let download_name = `sg-data-uploaded.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.tgz`;
-      res.download(tmp_file, download_name);
+    prepareData(filelist).then((prepare_result) => {
+      let download_name = `sg-data-uploaded.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.zip`;
+      res.download(TMP_FILE, download_name);
     }).catch((err) => {
-      console.log('error sending file...');
-      console.error(err);
-      res.send('ERROR '+err);
+      res.send('ERROR processing download request '+err);
     });
   });
 });
 
 router.get('/ctt-data-rotated', function(req, res, next) {
-  glob('/data/rotated/*.gz', (err, ctt_files) => {
-    if (ctt_files.length < 1) {
+  glob('/data/rotated/*.gz', (err, filelist) => {
+    if (filelist.length < 1) {
       res.send('Nothing to download yet');
       return;
     }
-    let tmp_file = '/tmp/download.tgz';
-    if (fs.existsSync(tmp_file)) {
-      fs.unlinkSync(tmp_file);
-    }
-    tar.c({
-      gzip: true,
-      file: tmp_file
-    },
-    ctt_files).then(() => {
-      let download_name = `ctt-data-rotated.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.tgz`;
-      res.download(tmp_file, download_name);
+    prepareData(filelist).then((prepare_result) => {
+      let download_name = `ctt-data-rotated.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.zip`;
+      res.download(TMP_FILE, download_name);
     }).catch((err) => {
-      console.log('error sending file...');
-      console.error(err);
-      res.send('ERROR '+err);
+      res.send('ERROR processing download request '+err);
     });
   });
 });
 
 router.get('/ctt-data-uploaded', function(req, res, next) {
-  glob('/data/uploaded/ctt/*.gz', (err, uploaded_files) => {
-    if (uploaded_files.length < 1) {
+  glob('/data/uploaded/ctt/*.gz', (err, filelist) => {
+    if (filelist.length < 1) {
       res.send('Nothing to download yet');
       return;
     }
-    let tmp_file = '/tmp/download.tgz';
-    if (fs.existsSync(tmp_file)) {
-      fs.unlinkSync(tmp_file);
-    }
-    tar.c({
-      gzip: true,
-      file: tmp_file
-    },
-    uploaded_files).then(() => {
-      let download_name = `ctt-data-uploaded.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.tgz`;
-      res.download(tmp_file, download_name);
+    prepareData(filelist).then((prepare_result) => {
+      let download_name = `ctt-data-uploaded.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.zip`;
+      res.download(TMP_FILE, download_name);
     }).catch((err) => {
-      console.log('error sending file...');
-      console.error(err);
-      res.send('ERROR '+err);
+      res.send('ERROR processing download request '+err);
     });
   });
 });
