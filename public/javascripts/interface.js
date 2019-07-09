@@ -35,27 +35,33 @@ const initialize_controls = function() {
   document.querySelectorAll('button[name="toggle_node_radio"]').forEach((btn) => {
     btn.addEventListener('click', function(e) {
       let radio_id = e.target.getAttribute('value');
-      socket.send(JSON.stringify({
-        msg_type: 'cmd', 
-        cmd: 'toggle_radio', 
-        data: {
-          type: 'node',
-          channel: radio_id
-        }
-      }));
+      let res = window.confirm('Are you sure you want to toggle NODE listening mode for radio '+radio_id+'?');
+      if (res) {
+        socket.send(JSON.stringify({
+          msg_type: 'cmd', 
+          cmd: 'toggle_radio', 
+          data: {
+            type: 'node',
+            channel: radio_id
+          }
+        }));
+      }
     });
   });
   document.querySelectorAll('button[name="toggle_tag_radio"]').forEach((btn) => {
     btn.addEventListener('click', function(e) {
       let radio_id = e.target.getAttribute('value');
-      socket.send(JSON.stringify({
-        msg_type: 'cmd', 
-        cmd: 'toggle_radio', 
-        data: {
-          type: 'tag',
-          channel: radio_id
-        }
-      }));
+      let res = window.confirm('Are you sure you want to toggle TAG listening mode for radio '+radio_id+'?');
+      if (res) {
+        socket.send(JSON.stringify({
+          msg_type: 'cmd', 
+          cmd: 'toggle_radio', 
+          data: {
+            type: 'tag',
+            channel: radio_id
+          }
+        }));
+      }
     });
   });
   document.querySelector('#save-radios').addEventListener('click', (evt) => {
@@ -65,21 +71,39 @@ const initialize_controls = function() {
       data: {}
     }));
   });
-  document.querySelectorAll('button[name="toggle_cornell_radio"]').forEach((btn) => {
+  document.querySelectorAll('button[name="toggle_ook_radio"]').forEach((btn) => {
     btn.addEventListener('click', function(e) {
       let radio_id = e.target.getAttribute('value');
-      socket.send(JSON.stringify({
-        msg_type: 'cmd', 
-        cmd: 'toggle_radio', 
-        data: {
-          type: 'cornell',
-          channel: radio_id
-        }
-      }));
+      let res = window.confirm('Are you sure you want to toggle OOK listening mode for radio '+radio_id+'?');
+      if (res) {
+        socket.send(JSON.stringify({
+          msg_type: 'cmd', 
+          cmd: 'toggle_radio', 
+          data: {
+            type: 'ook',
+            channel: radio_id
+          }
+        }));
+      }
     });
   });
   document.querySelector('#clear').addEventListener('click', (evt) => {
     clear();
+  });
+  document.querySelector('#reboot').addEventListener('click', (evt) => {
+    let res = window.confirm('Are you sure you want to reboot?');
+    if (res) {
+      $.ajax({
+        url: '/reboot',
+        method: 'post',
+        success: function(data) {
+          alert('rebooting');
+        },
+        error: function(err) {
+          alert('error trying to reboot', err.toString());
+        }
+      });
+    }
   });
   document.querySelector('#clear-log').addEventListener('click', (evt) => {
     let res = window.confirm('Are you sure you want to clear the log file?');

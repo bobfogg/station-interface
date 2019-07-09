@@ -9,6 +9,7 @@ const archiver = require('archiver');
 
 const TMP_FILE = '/tmp/download.zip';
 const SG_DEPLOYMENT_FILE = '/data/sg_files/deployment.txt'
+const LOG_FILE = '/data/sensor-station.log'
 
 router.get('/', function(req, res, next) {
   res.render('main', {title: 'CTT Sensor Station', message: 'pug' });
@@ -65,6 +66,34 @@ const prepareData = (filelist) => {
     archive.finalize();
   });
 };
+
+router.get('/ctt-data-current', (req, res, next) => {
+  glob('/data/*.csv', (err, filelist) => {
+    if (filelist.length < 1) {
+      res.send('No data available');
+      return;
+    }
+    prepareData(filelist).then((prepare_result) => {
+      let download_name = `ctt-data.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.zip`;
+      res.download(TMP_FILE, download_name);
+    }).catch((err) => {
+      next(err);
+    });
+  });
+});
+
+router.get('/ctt-logfile', (req, res, next) => {
+  if (fs.existsSync(LOG_FILE)) {
+    prepareData([LOG_FILE]).then((prepare_result) => {
+      let download_name = `ctt-log.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.zip`;
+      res.download(TMP_FILE, download_name);
+    }).catch((err) => {
+      next(err);
+    });
+  } else {
+    res.send('no log file to download');
+  }
+});
 
 router.get('/sg-data-rotated', function(req, res, next) {
   glob('/data/SGdata/*/*.gz', (err, filelist) => {
@@ -173,6 +202,7 @@ router.post('/clear-log/', (req, res, next) => {
   if (fs.existsSync(log_file)) {
     fs.unlinkSync(log_file);
     res.send(JSON.stringify({res: true}));
+    return;
   }
   res.send(JSON.stringify({res: false}));
 });
@@ -188,7 +218,7 @@ router.get('/chrony', (req, res, next) => {
   });
 });
 
-router.get('/reboot', (req, res, next) => {
+router.post('/reboot', (req, res, next) => {
   const reboot = spawn('shutdown', ['-r', 'now']);
   reboot.stdout.on('data', (data) => {
     console.log('data', data.toString());
@@ -198,4 +228,5 @@ router.get('/reboot', (req, res, next) => {
   })
   res.send('rebooting');
 });
+
 module.exports = router;
