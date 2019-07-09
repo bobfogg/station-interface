@@ -65,11 +65,14 @@ const initialize_controls = function() {
     });
   });
   document.querySelector('#save-radios').addEventListener('click', (evt) => {
-    socket.send(JSON.stringify({
-      msg_type: 'cmd',
-      cmd: 'save_radio',
-      data: {}
-    }));
+    let res = window.confirm('Are you sure you want to save the current radio configuration?');
+    if (res) {
+      socket.send(JSON.stringify({
+        msg_type: 'cmd',
+        cmd: 'save_radio',
+        data: {}
+      }));
+    }
   });
   document.querySelectorAll('button[name="toggle_ook_radio"]').forEach((btn) => {
     btn.addEventListener('click', function(e) {
