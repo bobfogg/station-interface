@@ -498,7 +498,7 @@ const initialize_websocket = function() {
     case('gps'):
       setText('lat', data.lat.toFixed(6));
       setText('lng', data.lon.toFixed(6));
-      setText('time', moment(new Date(data.time)).format(DATE_FMT));
+      setText('time', moment(new Date(data.time)));
       setText('alt', data.alt);
       let n = 0;
       data.satellites.forEach((sat) => {
