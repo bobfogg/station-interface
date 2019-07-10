@@ -8,12 +8,6 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     h1(style="text-align: center;") CTT Sensor Station Overview
     div(class="row")
       div(class="col-lg-8")
-        h2 Sensor Station Log
-        div(style="overflow: scroll; height:400px;")
-          table(class="table table-bordered table-sm table-dark" id="raw_log")
-            tr(class="table-primary", style="color:#111") 
-              th Time
-              th Message
         div(class="row")
           div(class="col-sm")
             h2 Nodes
@@ -35,8 +29,14 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
                   th Alias
                   th 
                   th 
+        div(style="min-height:250px;", id="tag_hist")
 
-            div(style="min-height:250px;", id="tag_hist")
+        h2 Sensor Station Log
+        div(style="overflow: scroll; height:400px;")
+          table(class="table table-bordered table-sm table-dark" id="raw_log")
+            tr(class="table-primary", style="color:#111") 
+              th Time
+              th Message
 
       div(class="col-lg-4")
         h2 Station
