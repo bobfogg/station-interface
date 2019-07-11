@@ -6,6 +6,7 @@ const fs = require('fs');
 const moment = require('moment');
 const { spawn }  = require('child_process');
 const archiver = require('archiver');
+const bodyParser = require('body-parser');
 
 const TMP_FILE = '/tmp/download.zip';
 const SG_DEPLOYMENT_FILE = '/data/sg_files/deployment.txt'
@@ -227,6 +228,39 @@ router.post('/reboot', (req, res, next) => {
     console.log('err', data.toString());
   })
   res.send('rebooting');
+});
+
+router.get('/update', (req, res, next) => {
+  res.render('update', {title: 'CTT Sensor Station Update', message: 'pug' });
+});
+
+router.use(bodyParser.raw({
+  limit: '50mb'
+}));
+
+router.post('/update', (req, res, next) => {
+  let contents = req.body.toString();
+  fs.writeFile('/tmp/update.sh',contents, (err) => {
+    if (err) {
+      res.send('error writing update file');
+      return;
+    } else {
+      const cmd  = spawn('/bin/bash', ['/tmp/update.sh']);
+      cmd.on('error', (err) => {
+        console.error(err);
+      });
+      cmd.stdout.on('data', (data) => {
+        console.log(data);
+      });
+      cmd.stderr.on('data', (data) => {
+        console.log('error', data);
+      });
+
+      cmd.on('close', () => {
+        res.send('updating');
+      });
+    }
+  });
 });
 
 module.exports = router;

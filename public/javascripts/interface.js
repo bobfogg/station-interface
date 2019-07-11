@@ -231,7 +231,6 @@ const handle_beep = function(beep) {
     button.addEventListener('click', (evt) => {
       let tag_id = evt.target.getAttribute('value');
       let alias = evt.target.parentElement.previousSibling.firstChild.value;
-      e = evt;
       localStorage.setItem(tag_id, alias);
     });
     td.appendChild(button);
