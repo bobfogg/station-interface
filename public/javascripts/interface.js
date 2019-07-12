@@ -291,7 +291,7 @@ const handle_node_alive = function(node_alive_msg) {
     tr.appendChild(td);
     td = createElement(node_alive.rssi);
     tr.appendChild(td);
-    td = createElement(node_alive.battery);
+    td = createElement(Math.round(node_alive.battery*100)/100);
     tr.appendChild(td);
     tr.appendChild(createElement(node_alive.firmware));
     NODE_TABLE.insertBefore(tr, NODE_TABLE.firstChild.nextSibling);
@@ -431,7 +431,7 @@ const initialize_sg_socket = function () {
       if (vals.length == 5) {
         let sg_table = document.querySelector('#sg-data');
         let tr = document.createElement('tr');
-        let dt = moment(new Date(parseInt(vals[1]*1000)));
+        let dt = moment(new Date(parseInt(vals[1]*1000))).utc();
         tr.appendChild(createElement(vals[0]));
         tr.appendChild(createElement(dt.format(DATE_FMT)));
         tr.appendChild(createElement(vals[2]));
