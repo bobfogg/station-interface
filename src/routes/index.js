@@ -103,7 +103,7 @@ router.get('/sg-data-rotated', function(req, res, next) {
       return;
     }
     prepareData(filelist).then((prepare_result) => {
-      let download_name = `sg-data-uploaded.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.zip`;
+      let download_name = `sg-data-rotated.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.zip`;
       res.download(TMP_FILE, download_name);
     }).catch((err) => {
       res.send('ERROR processing download request '+err);
