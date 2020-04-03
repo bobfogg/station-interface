@@ -8,6 +8,7 @@
     "babel": "babel src -d lib",
     "lint": " cross-env eslint src",
     "build": "npm run babel",
+    "compile": "babel src -d lib --source-maps --watch",
     "dev": "npm run build && npm run start"
   },
   "author": "Bob Fogg",
@@ -15,10 +16,12 @@
   "dependencies": {
     "archiver": "^3.0.0",
     "body-parser": "^1.19.0",
+    "bootstrap": "^4.4.1",
     "cookie-parser": "^1.4.4",
     "debug": "^4.1.1",
     "express": "^4.16.4",
     "glob": "^7.1.4",
+    "highcharts": "^8.0.4",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "pug": "^2.0.3",

@@ -180,43 +180,70 @@ const initialize_controls = function() {
 };
 
 const handle_beep = function(beep) {
+  switch(beep.meta.data_type) {
+    case 'coded_id':
+      handle_tag_beep(beep);
+      break;
+    case 'node_coded_id':
+      handle_tag_beep(beep);
+      break;
+    default:
+      console.log('unknown beep', beep);
+      break;
+  }
+};
 
+const handle_tag_beep = function(beep) {
+  let node_id;
+  let tag_id = beep.data.id;
+  let validated = false;
+  if (tag_id.length > 8) {
+    tag_id = tag_id.slice(0,8);
+    validated = true;
+  }
   let BEEP_TABLE = document.querySelector('#radio_'+beep.channel);
-  let received_at = new Date(beep.received_at);
-  let rx_dt = moment(beep.tag_at).utc().format(DATE_FMT);
+  let rx_dt = moment(new Date(beep.received_at)).utc().format(DATE_FMT);
   let tr = document.createElement('tr');
+  if (validated == true) {
+    tr.style.border= "2px solid #22dd22";
+  } else {
+    tr.style.border= "2px solid red";
+  }
   let td = document.createElement('td');
   td.textContent = rx_dt;
   tr.appendChild(td);
-  let alias = localStorage.getItem(beep.tag_id);
+  let alias = localStorage.getItem(tag_id);
   if (alias) {
     tr.appendChild(createElement(alias));
   } else {
-    tr.appendChild(createElement(beep.tag_id));
+    tr.appendChild(createElement(tag_id));
   }
-  tr.appendChild(createElement(beep.rssi));
-  tr.appendChild(createElement(beep.node_id));
+  tr.appendChild(createElement(beep.meta.rssi));
+  if (beep.meta.data_type == 'node_coded_id') {
+    node_id = beep.meta.source.id;
+  }
+  tr.appendChild(createElement(node_id));
   BEEP_TABLE.insertBefore(tr, BEEP_TABLE.firstChild.nextSibling);
   beeps.push(beep);
-  let beep_count = beep_hist[beep.tag_id];
-  if (tags.has(beep.tag_id)) {
-    beep_hist[beep.tag_id] += 1;
-    document.querySelector('#cnt_'+beep.tag_id).textContent = beep_hist[beep.tag_id];
+  let beep_count = beep_hist[tag_id];
+  if (tags.has(tag_id)) {
+    beep_hist[tag_id] += 1;
+    document.querySelector('#cnt_'+tag_id).textContent = beep_hist[tag_id];
   } else {
-    beep_hist[beep.tag_id] = 1;
-    tags.add(beep.tag_id);
+    beep_hist[tag_id] = 1;
+    tags.add(tag_id);
     let TAG_TABLE = document.querySelector('#tags');
     tr = document.createElement('tr');
-    td = createElement(beep.tag_id);
+    td = createElement(tag_id);
     tr.appendChild(td);
     td = document.createElement('td');
-    td.setAttribute('id','cnt_'+beep.tag_id);
-    td.textContent = beep_hist[beep.tag_id];
+    td.setAttribute('id','cnt_'+tag_id);
+    td.textContent = beep_hist[tag_id];
     tr.appendChild(td);
     let input = document.createElement('input');
     input.setAttribute('type', 'text');
     input.setAttribute('class', 'form-input');
-    let alias = localStorage.getItem(beep.tag_id);
+    let alias = localStorage.getItem(tag_id);
     if (alias) {
       input.setAttribute('value', alias);
     }
@@ -227,7 +254,7 @@ const handle_beep = function(beep) {
     let button = document.createElement('button');
     button.setAttribute('class', 'btn btn-sm btn-primary tag-alias');
     button.textContent='Update';
-    button.setAttribute('value', beep.tag_id);
+    button.setAttribute('value', tag_id);
     button.addEventListener('click', (evt) => {
       let tag_id = evt.target.getAttribute('value');
       let alias = evt.target.parentElement.previousSibling.firstChild.value;
@@ -460,6 +487,7 @@ const initialize_websocket = function() {
     setInterval(updateStats, 10000);
   });
   socket.onmessage = function(msg) {
+    console.log('rx', msg.data);
     let data = JSON.parse(msg.data);
     let tr, td;
     switch(data.msg_type) {
