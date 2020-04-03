@@ -179,33 +179,123 @@ const initialize_controls = function() {
   });
 };
 
+const format_beep = function(beep) {
+  if (beep.data) {
+    let tag_id, rssi, node_id, tag_at;
+    let beep_at = moment(new Date(beep.received_at)).utc();
+    tag_at = beep_at;
+    if (beep.protocol) {
+      // new protocol
+      if (beep.meta.data_type == 'node_coded_id') {
+        node_id = beep.meta.source.id;
+        rssi = beep.data.rssi;
+        tag_id =beep.data.id;
+        tag_at = moment(new Date(beep.data.rec_at*1000));
+      }
+      if (beep.meta.data_type == 'coded_id') {
+        rssi = beep.meta.rssi;
+        tag_id = beep.data.id;
+        tag_at = beep_at;
+      }
+    }
+
+    if (beep.data.tag) {
+      tag_id = beep.data.tag.id;
+      rssi = beep.rssi;
+    }
+    if (beep.data.node_tag) {
+      tag_id = beep.data.node_tag.tag_id;
+      rssi = beiep.node_beep.tag_rssi;
+      node_id = beep.node_beep.id;
+      tag_at = beep_at.subtract(beep.node_beep.offset_ms)
+    }
+    let data = {
+      tag_id: tag_id,
+      node_id: node_id,
+      rssi: rssi,
+      channel: beep.channel,
+      received_at: beep_at,
+      tag_at: tag_at
+    }
+    return data
+  }
+}
+
+const format_node_health = function(msg) {
+  let node_id, rssi, batt, temp, fw, sol_v, sol_ma, sum_sol_ma, fix_at, lat, lng;
+  if (msg.protocol) {
+    node_id = msg.meta.source.id;
+    fw = msg.data.fw;
+    rssi = msg.meta.rssi;
+    lat = msg.data.lat / 1000000;
+    lng = msg.data.lon / 1000000;
+    batt = msg.data.bat_v / 100;
+    sol_v = msg.data.sol_v;
+    sol_ma = msg.data.sol_ma;
+    sum_sol_ma = msg.data.sum_sol_ma;
+    temp_c = msg.data.temp_c;
+    fix_at = moment(new Date(msg.data.fix_at*1000)).utc();
+  }
+  if (msg.data.node_alive) {
+    node_id = msg.node_alive;
+    rssi = msg.rssi;
+    batt = msg.data.battery_mv / 1000;
+    temp_c = msg.data.celsius;
+    fw = msg.data.firmware;
+
+  }
+  let data = {
+    node_id: node_id,
+    fw: fw,
+    rssi: rssi,
+    lat: lat,
+    lng: lng,
+    battery: batt,
+    sol_v: sol_v,
+    sol_ma: sol_ma,
+    sum_sol_ma: sum_sol_ma,
+    fix_at: fix_at,
+    received_at: moment(new Date(msg.received_at)).utc()
+  }
+  console.log('health', msg, '-->', data);
+  return data;
+}
+
+
 const handle_beep = function(beep) {
-  switch(beep.meta.data_type) {
-    case 'coded_id':
-      handle_tag_beep(beep);
-      break;
-    case 'node_coded_id':
-      handle_tag_beep(beep);
-      break;
-    case 'node_health':
+  if (beep.protocol) {
+    switch(beep.meta.data_type) {
+      case 'coded_id':
+        handle_tag_beep(format_beep(beep));
+        break;
+      case 'node_coded_id':
+        handle_tag_beep(format_beep(beep));
+        break;
+      case 'node_health':
+        handle_node_alive(format_node_health(beep));
+        break;
+      default:
+        console.log('unknown beep', beep);
+        break;
+    }
+    return;
+  }
+  if (beep.data) {
+    if (beep.data.node_alive) {
       handle_node_alive(beep);
-      break;
-    default:
-      console.log('unknown beep', beep);
-      break;
+      return;
+    }
   }
 };
 
 const handle_tag_beep = function(beep) {
-  let node_id;
-  let tag_id = beep.data.id;
   let validated = false;
+  let tag_id = beep.tag_id;
   if (tag_id.length > 8) {
     tag_id = tag_id.slice(0,8);
     validated = true;
   }
   let BEEP_TABLE = document.querySelector('#radio_'+beep.channel);
-  let rx_dt = moment(new Date(beep.received_at)).utc().format(DATE_FMT);
   let tr = document.createElement('tr');
   if (validated == true) {
     tr.style.border= "2px solid #22dd22";
@@ -213,7 +303,7 @@ const handle_tag_beep = function(beep) {
     tr.style.border= "2px solid red";
   }
   let td = document.createElement('td');
-  td.textContent = rx_dt;
+  td.textContent = beep.tag_at.format(DATE_FMT);
   tr.appendChild(td);
   let alias = localStorage.getItem(tag_id);
   if (alias) {
@@ -221,11 +311,8 @@ const handle_tag_beep = function(beep) {
   } else {
     tr.appendChild(createElement(tag_id));
   }
-  tr.appendChild(createElement(beep.meta.rssi));
-  if (beep.meta.data_type == 'node_coded_id') {
-    node_id = beep.meta.source.id;
-  }
-  tr.appendChild(createElement(node_id));
+  tr.appendChild(createElement(beep.rssi));
+  tr.appendChild(createElement(beep.node_id));
   BEEP_TABLE.insertBefore(tr, BEEP_TABLE.firstChild.nextSibling);
   beeps.push(beep);
   let beep_count = beep_hist[tag_id];
@@ -292,10 +379,9 @@ const createElement = function(text) {
 };
 
 const handle_node_alive = function(node_alive_msg) {
-  console.log('ALIVE', node_alive_msg);
   let NODE_TABLE = document.querySelector('#nodes');
   let tr, td;
-  let node_id = node_alive_msg.meta.source.id;
+  let node_id = node_alive_msg.node_id;
   nodes[node_id] = node_alive_msg;
   var items = Object.keys(nodes).map(function(key) {
     return [key, nodes[key]];
@@ -314,36 +400,39 @@ const handle_node_alive = function(node_alive_msg) {
   }).forEach((res) => {
     let node_id = res[0];
     let node_alive = res[1];
-    console.log(node_alive);
     tr = document.createElement('tr');
     td = createElement(node_id.toString());
     tr.appendChild(td);
-    td = createElement(moment(node_alive.data.sent_at*1000).utc().format(DATE_FMT));
+    td = createElement(node_alive.fix_at.format(DATE_FMT));
     tr.appendChild(td);
-    td = createElement(node_alive.meta.rssi);
+    td = createElement(node_alive.rssi);
     tr.appendChild(td);
-    td = createElement(node_alive.data.bat_v/100);
-    tr.appendChild(td);
-
-    td = createElement((node_alive.data.fw));
-    tr.appendChild(td);
-    td = createElement((node_alive.data.lat / 1000000));
-    tr.appendChild(td);
-    td = createElement((node_alive.data.lon / 1000000));
+    td = createElement(node_alive.battery);
     tr.appendChild(td);
 
-    tr.appendChild(createElement(node_alive.data.firmware));
+    td = createElement((node_alive.fw));
+    tr.appendChild(td);
+    td = createElement((node_alive.lat));
+    tr.appendChild(td);
+    td = createElement((node_alive.lng));
+    tr.appendChild(td);
+    if (node_alive.fix_at) {
+      tr.appendChild(createElement(node_alive.fix_at.format(DATE_FMT)));
+    } else {
+      tr.appendChild(createElement('no gps fix'));
+    }
+
     NODE_TABLE.insertBefore(tr, NODE_TABLE.firstChild.nextSibling);
   });
   let BEEP_TABLE = document.querySelector('#radio_'+node_alive_msg.channel);
   tr = document.createElement('tr');
-  td = createElement(moment(node_alive_msg.data.sent_at).utc().format(DATE_FMT));
+  td = createElement(moment(node_alive_msg.received_at).format(DATE_FMT));
   tr.appendChild(td);
   td = document.createElement('td');
   td.setAttribute('class', 'table-success');
   td.textContent = 'ALIVE';
   tr.appendChild(td);
-  td = createElement(node_alive_msg.meta.rssi);
+  td = createElement(node_alive_msg.rssi);
   tr.appendChild(td);
   tr.appendChild(createElement(node_id));
   BEEP_TABLE.insertBefore(tr,BEEP_TABLE.firstChild.nextSibling);
@@ -577,7 +666,7 @@ const updateChrony = function() {
   render_tag_hist();
   RAW_LOG = document.querySelector('#raw_log');
   updateChrony();
-  setInterval(updateChrony, 10000);
+  setInterval(updateChrony, 30000);
   $.ajax({
     url: '/sg-deployment',
     success: function(contents) {
