@@ -627,15 +627,15 @@ const initialize_websocket = function() {
       handle_node_alive(data);
       break;
     case('gps'):
-      setText('lat', data.lat.toFixed(6));
-      setText('lng', data.lon.toFixed(6));
-      setText('time', moment(new Date(data.time)));
-      setText('alt', data.alt);
+      setText('lat', data.gps.lat.toFixed(6));
+      setText('lng', data.gps.lon.toFixed(6));
+      setText('time', moment(new Date(data.gps.time)));
+      setText('alt', data.gps.alt);
       let n = 0;
-      data.satellites.forEach((sat) => {
+      data.sky.satellites.forEach((sat) => {
         if (sat.used == true) n += 1;
       });
-      setText('nsats', `${n} of ${data.satellites.length} used`);
+      setText('nsats', `${n} of ${data.sky.satellites.length} used`);
       break;
     case('fw'):
     console.log('FW', data);
