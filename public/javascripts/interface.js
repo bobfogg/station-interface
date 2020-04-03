@@ -238,12 +238,11 @@ const format_node_health = function(msg) {
     fix_at = moment(new Date(msg.data.fix_at*1000)).utc();
   }
   if (msg.data.node_alive) {
-    node_id = msg.node_alive;
+    node_id = msg.data.node_alive.id;
     rssi = msg.rssi;
-    batt = msg.data.battery_mv / 1000;
-    temp_c = msg.data.celsius;
-    fw = msg.data.firmware;
-
+    batt = msg.data.node_alive.battery_mv / 1000;
+    temp_c = msg.data.node_alive.celsius;
+    fw = msg.data.node_alive.firmware;
   }
   let data = {
     node_id: node_id,
@@ -256,9 +255,9 @@ const format_node_health = function(msg) {
     sol_ma: sol_ma,
     sum_sol_ma: sum_sol_ma,
     fix_at: fix_at,
-    received_at: moment(new Date(msg.received_at)).utc()
+    received_at: moment(new Date(msg.received_at)).utc(),
+    channel: msg.channel
   }
-  console.log('health', msg, '-->', data);
   return data;
 }
 
@@ -283,7 +282,7 @@ const handle_beep = function(beep) {
   }
   if (beep.data) {
     if (beep.data.node_alive) {
-      handle_node_alive(beep);
+      handle_node_alive(format_node_health(beep));
       return;
     }
     if (beep.data.node_beep) {
@@ -407,7 +406,7 @@ const handle_node_alive = function(node_alive_msg) {
     tr = document.createElement('tr');
     td = createElement(node_id.toString());
     tr.appendChild(td);
-    td = createElement(node_alive.fix_at.format(DATE_FMT));
+    td = createElement(node_alive.received_at.format(DATE_FMT));
     tr.appendChild(td);
     td = createElement(node_alive.rssi);
     tr.appendChild(td);
