@@ -187,6 +187,9 @@ const handle_beep = function(beep) {
     case 'node_coded_id':
       handle_tag_beep(beep);
       break;
+    case 'node_health':
+      handle_node_alive(beep);
+      break;
     default:
       console.log('unknown beep', beep);
       break;
@@ -289,10 +292,10 @@ const createElement = function(text) {
 };
 
 const handle_node_alive = function(node_alive_msg) {
+  console.log('ALIVE', node_alive_msg);
   let NODE_TABLE = document.querySelector('#nodes');
   let tr, td;
-  node_alive_msg.received_at = new Date(node_alive_msg.received_at);
-  let node_id = node_alive_msg.node_id;
+  let node_id = node_alive_msg.meta.source.id;
   nodes[node_id] = node_alive_msg;
   var items = Object.keys(nodes).map(function(key) {
     return [key, nodes[key]];
@@ -311,27 +314,36 @@ const handle_node_alive = function(node_alive_msg) {
   }).forEach((res) => {
     let node_id = res[0];
     let node_alive = res[1];
+    console.log(node_alive);
     tr = document.createElement('tr');
     td = createElement(node_id.toString());
     tr.appendChild(td);
-    td = createElement(moment(node_alive.received_at).utc().format(DATE_FMT));
+    td = createElement(moment(node_alive.data.sent_at*1000).utc().format(DATE_FMT));
     tr.appendChild(td);
-    td = createElement(node_alive.rssi);
+    td = createElement(node_alive.meta.rssi);
     tr.appendChild(td);
-    td = createElement(Math.round(node_alive.battery*100)/100);
+    td = createElement(node_alive.data.bat_v/100);
     tr.appendChild(td);
-    tr.appendChild(createElement(node_alive.firmware));
+
+    td = createElement((node_alive.data.fw));
+    tr.appendChild(td);
+    td = createElement((node_alive.data.lat / 1000000));
+    tr.appendChild(td);
+    td = createElement((node_alive.data.lon / 1000000));
+    tr.appendChild(td);
+
+    tr.appendChild(createElement(node_alive.data.firmware));
     NODE_TABLE.insertBefore(tr, NODE_TABLE.firstChild.nextSibling);
   });
   let BEEP_TABLE = document.querySelector('#radio_'+node_alive_msg.channel);
   tr = document.createElement('tr');
-  td = createElement(moment(node_alive_msg.received_at).utc().format(DATE_FMT));
+  td = createElement(moment(node_alive_msg.data.sent_at).utc().format(DATE_FMT));
   tr.appendChild(td);
   td = document.createElement('td');
   td.setAttribute('class', 'table-success');
   td.textContent = 'ALIVE';
   tr.appendChild(td);
-  td = createElement(node_alive_msg.rssi);
+  td = createElement(node_alive_msg.meta.rssi);
   tr.appendChild(td);
   tr.appendChild(createElement(node_id));
   BEEP_TABLE.insertBefore(tr,BEEP_TABLE.firstChild.nextSibling);
@@ -397,18 +409,19 @@ const render_tag_hist = function() {
       }
       return 1;
     });
-    sorted_keys.forEach(function(tag_id) {
-      let alias = localStorage.getItem(tag_id);
-      if (alias) {
-        tag_ids.push(alias);
-      } else {
-        tag_ids.push(tag_id);
-      }
-    });
-
     let values = [];
-    sorted_keys.forEach((tag) => {
-      values.push(beep_hist[tag]);
+    sorted_keys.forEach(function(tag) {
+      let count;
+      let alias = localStorage.getItem(tag);
+      if (!alias) {
+        alias = tag;
+      }
+
+      count = beep_hist[tag];
+      if (count > 1) {
+        tag_ids.push(alias);
+        values.push(count);
+      }
     });
 
     $('#tag_hist').highcharts({
@@ -487,7 +500,6 @@ const initialize_websocket = function() {
     setInterval(updateStats, 10000);
   });
   socket.onmessage = function(msg) {
-    console.log('rx', msg.data);
     let data = JSON.parse(msg.data);
     let tr, td;
     switch(data.msg_type) {
