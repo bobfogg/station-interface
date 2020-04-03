@@ -205,10 +205,11 @@ const format_beep = function(beep) {
     }
     if (beep.data.node_tag) {
       tag_id = beep.data.node_tag.tag_id;
-      rssi = beiep.node_beep.tag_rssi;
-      node_id = beep.node_beep.id;
-      tag_at = beep_at.subtract(beep.node_beep.offset_ms)
+      rssi = beep.data.node_beep.tag_rssi;
+      node_id = beep.data.node_beep.id;
+      tag_at = beep_at.subtract(beep.data.node_beep.offset_ms)
     }
+
     let data = {
       tag_id: tag_id,
       node_id: node_id,
@@ -284,6 +285,9 @@ const handle_beep = function(beep) {
     if (beep.data.node_alive) {
       handle_node_alive(beep);
       return;
+    }
+    if (beep.data.node_beep) {
+      handle_tag_beep(format_beep(beep));
     }
   }
 };
