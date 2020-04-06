@@ -7,6 +7,7 @@
     "start": "node lib/bin/www.js",
     "babel": "babel src -d lib",
     "lint": " cross-env eslint src",
+    "prep": "cp -r node_modules/highcharts public/ && cp -r node_modules/bootstrap public/",
     "build": "npm run babel",
     "compile": "babel src -d lib --source-maps --watch",
     "dev": "npm run build && npm run start"
