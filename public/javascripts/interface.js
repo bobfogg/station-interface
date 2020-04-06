@@ -599,7 +599,7 @@ const initialize_websocket = function() {
       handle_beep(data);
       break;
     case('about'):
-      let about = data.data;
+      let about = data;
       document.querySelector('#station-id').textContent = about.station_id;
       document.querySelector('#serial').textContent = about.serial;
       document.querySelector('#hardware').textContent = about.hardware;
