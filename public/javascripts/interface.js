@@ -510,7 +510,7 @@ const render_tag_hist = function() {
       }
 
       count = beep_hist[tag];
-      if (count > 1) {
+      if (count > 5) {
         tag_ids.push(alias);
         values.push(count);
       }
