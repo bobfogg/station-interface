@@ -14,29 +14,27 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     div(class="row")
       div(class="col-lg-8")
         div(class="row")
-          div(class="col-sm")
-            h2 Nodes
-            div(style="overflow: scroll; height:400px;")
-              table(class="table table-bordered table-sm table-dark" id="nodes")
-                tr(class="table-primary", style="color:#111") 
-                  th Node ID
-                  th Last Heard
-                  th RSSI
-                  th Battery
-                  th Firmware
-                  th Latitude
-                  th Longitude 
-                  th GPS Time
-          div(class="col-sm")
-            h2 Tags
-            div(style="overflow: scroll; height:400px;")
-              table(class="table table-bordered table-sm table-dark" id="tags")
-                tr(class="table-primary", style="color:#111") 
-                  th Tag ID
-                  th Count
-                  th Alias
-                  th 
-                  th 
+          h2 Nodes
+          table(class="table table-bordered table-sm table-dark" id="node-history")
+            tr(class="table-primary", style="color:#111")
+              th Node ID
+              th Last Heard
+              th RSSI
+              th Battery
+              th Firmware
+              th Latitude
+              th Longitude 
+              th GPS Time
+
+        div(class="row")
+          h2 Live Tags
+          table(class="table table-bordered table-sm table-dark" id="tags")
+            tr(class="table-primary", style="color:#111") 
+              th Tag ID
+              th Count
+              th Alias
+              th 
+              th 
         div(style="min-height:250px;", id="tag_hist")
 
         h2 Sensor Station Log
@@ -53,6 +51,10 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             th ID
             td
               span(id="station-id")
+          tr
+            th Software Start
+            td
+              span(id="software-start")
           tr
             th Compute Module Serial
             td
@@ -114,6 +116,21 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     div(class="row")
       div(class="col-lg")
         h2(style="text-align:center;") Radio 1
+        table(class="table table-sm table-bordered table-dark", id="radio_stats_1")
+          tr
+            th Beeps
+            td
+              span(id="beep_count_1")
+          tr
+            th Nodes
+            td
+              span(id="node_beep_count_1")
+          tr
+            th Telemetry
+            td
+              span(id="telemetry_beep_count_1")
+
+
         div(style="overflow: scroll; height:400px;")
           table(class="table table-sm table-bordered table-dark radio", id="radio_1")
             tr(class="table-primary", style="color: #111;")
@@ -131,6 +148,21 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
 
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 2
+        table(class="table table-sm table-bordered table-dark", id="radio_stats_2")
+          tr
+            th Beeps
+            td
+              span(id="beep_count_2")
+          tr
+            th Nodes
+            td
+              span(id="node_beep_count_2")
+          tr
+            th Telemetry
+            td
+              span(id="telemetry_beep_count_2")
+
+
         div(style="overflow: scroll; height:400px;")
           table(class="table table-sm table-bordered table-dark radio", id="radio_2")
             tr(class="table-primary", style="color: #111;")
@@ -148,6 +180,21 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
 
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 3
+        table(class="table table-sm table-bordered table-dark", id="radio_stats_3")
+          tr
+            th Beeps
+            td
+              span(id="beep_count_3")
+          tr
+            th Nodes
+            td
+              span(id="node_beep_count_3")
+          tr
+            th Telemetry
+            td
+              span(id="telemetry_beep_count_3")
+
+
         div(style="overflow: scroll; height:400px;")
           table(class="table table-sm table-bordered table-dark radio", id="radio_3")
             tr(class="table-primary", style="color: #111;")
@@ -165,6 +212,21 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
 
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 4
+        table(class="table table-sm table-bordered table-dark", id="radio_stats_4")
+          tr
+            th Beeps
+            td
+              span(id="beep_count_4")
+          tr
+            th Nodes
+            td
+              span(id="node_beep_count_4")
+          tr
+            th Telemetry
+            td
+              span(id="telemetry_beep_count_4")
+
+
         div(style="overflow: scroll; height:400px;")
           table(class="table table-sm table-bordered table-dark radio", id="radio_4")
             tr(class="table-primary", style="color: #111;")
@@ -182,6 +244,21 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
 
       div(class="col-lg")
         h2(style="text-align:center;")  Radio 5
+        table(class="table table-sm table-bordered table-dark", id="radio_stats_5")
+          tr
+            th Beeps
+            td
+              span(id="beep_count_5")
+          tr
+            th Nodes
+            td
+              span(id="node_beep_count_5")
+          tr
+            th Telemetry
+            td
+              span(id="telemetry_beep_count_5")
+
+
         div(style="overflow: scroll; height:400px;")
           table(class="table table-sm table-bordered table-dark radio", id="radio_5")
             tr(class="table-primary", style="color: #111;")

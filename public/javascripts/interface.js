@@ -25,7 +25,6 @@ const clear = function() {
   beep_hist = {};
 
   document.querySelectorAll('.radio').forEach(function(radio_table)  {
-    console.log('about to clear', radio_table);
     clear_table(radio_table);
     clear_table(document.querySelector('#tags'));
   });
@@ -272,7 +271,7 @@ const handle_beep = function(beep) {
         handle_tag_beep(format_beep(beep));
         break;
       case 'node_health':
-        handle_node_alive(format_node_health(beep));
+        console.log(beep);
         break;
       default:
         console.log('unknown beep', beep);
@@ -282,7 +281,7 @@ const handle_beep = function(beep) {
   }
   if (beep.data) {
     if (beep.data.node_alive) {
-      handle_node_alive(format_node_health(beep));
+      console.log(beep);
       return;
     }
     if (beep.data.node_beep) {
@@ -381,64 +380,87 @@ const createElement = function(text) {
   return td;
 };
 
-const handle_node_alive = function(node_alive_msg) {
-  let NODE_TABLE = document.querySelector('#nodes');
-  let tr, td;
-  let node_id = node_alive_msg.node_id;
-  nodes[node_id] = node_alive_msg;
-  var items = Object.keys(nodes).map(function(key) {
-    return [key, nodes[key]];
+const handle_stats = function(stats) {
+  let record;
+  let reports = {};
+  let received_at, old_received_at;
+  let n = 0;
+  let channel_stats = {}
+  Object.keys(stats.channels).forEach(function(channel) {
+    let channel_data = stats.channels[channel];
+    Object.keys(channel_data.nodes.health).forEach(function(node_id) {
+      record = channel_data.nodes.health[node_id];
+      received_at = moment(record.Time);
+      if (reports[node_id]) {
+        old_received_at = moment(reports[node_id].Time);
+        if (received_at > old_received_at) {
+          // this is newer - use this instead
+          reports[node_id] = record;
+        }
+      } else {
+        // new node id - use this report
+        reports[node_id] = record;
+      }
+    });
+    n = 0;
+    let beeps, node_beeps, telemetry_beeps;
+    Object.keys(channel_data.beeps).forEach(function(tag_id) {
+      n += channel_data.beeps[tag_id];
+    });
+    beeps = n;
+    n = 0;
+    Object.keys(channel_data.nodes.beeps).forEach(function(tag_id) {
+      n += channel_data.nodes.beeps[tag_id];
+    });
+    node_beeps = n;
+    n = 0;
+    Object.keys(channel_data.telemetry).forEach(function(tag_id) {
+      n += channel_data.telemetry[tag_id];
+    });
+    telemetry_beeps = n;
+    channel_stats[channel] = {
+      beeps: beeps,
+      node_beeps: node_beeps,
+      telemetry_beeps: telemetry_beeps
+    };
   });
+  render_nodes(reports);
+  render_channel_stats(channel_stats);
+};
+
+const render_channel_stats = function(channel_stats) {
+  let beep_info, node_beep_info, telemetry_beep_info;
+  Object.keys(channel_stats).forEach(function(channel) {
+    beep_info= `#beep_count_${channel}`;
+    node_beep_info= `#node_beep_count_${channel}`;
+    telemetry_beep_info= `#telemetry_beep_count_${channel}`;
+    let stats = channel_stats[channel];
+    document.querySelector(beep_info).textContent = stats.beeps;
+    document.querySelector(node_beep_info).textContent = stats.node_beeps;
+    document.querySelector(telemetry_beep_info).textContent = stats.telemetry_beeps;
+  });
+};
+
+const render_nodes = function(reports) {
+  let NODE_TABLE = document.querySelector('#node-history');
   while (NODE_TABLE.firstChild.nextSibling) {
     NODE_TABLE.removeChild(NODE_TABLE.firstChild.nextSibling);
   }
-  items.sort(function(a, b) {
-    if (a.received_at < b.received_at) {
-      return -1;
-    }
-    if (a.received_at > b.received_at) {
-      return 1;
-    }
-    return 0;
-  }).forEach((res) => {
-    let node_id = res[0];
-    let node_alive = res[1];
+  let report;
+  let tr, td;
+  Object.keys(reports).forEach(function(node_id) {
+    report = reports[node_id];
     tr = document.createElement('tr');
-    td = createElement(node_id.toString());
-    tr.appendChild(td);
-    td = createElement(node_alive.received_at.format(DATE_FMT));
-    tr.appendChild(td);
-    td = createElement(node_alive.rssi);
-    tr.appendChild(td);
-    td = createElement(node_alive.battery);
-    tr.appendChild(td);
-
-    td = createElement((node_alive.fw));
-    tr.appendChild(td);
-    td = createElement((node_alive.lat));
-    tr.appendChild(td);
-    td = createElement((node_alive.lng));
-    tr.appendChild(td);
-    if (node_alive.fix_at) {
-      tr.appendChild(createElement(node_alive.fix_at.format(DATE_FMT)));
-    } else {
-      tr.appendChild(createElement('no gps fix'));
-    }
-
-    NODE_TABLE.insertBefore(tr, NODE_TABLE.firstChild.nextSibling);
+    tr.appendChild(createElement(node_id));
+    tr.appendChild(createElement(moment(report.Time).format(DATE_FMT)));
+    tr.appendChild(createElement(report.NodeRSSI));
+    tr.appendChild(createElement(report.Battery));
+    tr.appendChild(createElement(report.Firmware));
+    tr.appendChild(createElement(report.Latitude));
+    tr.appendChild(createElement(report.Longitude));
+    tr.appendChild(createElement(moment(report.RecordedAt).format(DATE_FMT)));
+    NODE_TABLE.appendChild(tr);
   });
-  let BEEP_TABLE = document.querySelector('#radio_'+node_alive_msg.channel);
-  tr = document.createElement('tr');
-  td = createElement(moment(node_alive_msg.received_at).format(DATE_FMT));
-  tr.appendChild(td);
-  td = document.createElement('td');
-  td.setAttribute('class', 'table-success');
-  td.textContent = 'ALIVE';
-  tr.appendChild(td);
-  td = createElement(node_alive_msg.rssi);
-  tr.appendChild(td);
-  tr.appendChild(createElement(node_id));
-  BEEP_TABLE.insertBefore(tr,BEEP_TABLE.firstChild.nextSibling);
 };
 
 const render_pie = function(id, data) {
@@ -579,6 +601,10 @@ const updateStats = function() {
     msg_type: 'cmd',
     cmd: 'about'
   }));
+  socket.send(JSON.stringify({
+    msg_type: 'cmd',
+    cmd: 'stats'
+  }));
 };
 
 const initialize_websocket = function() {
@@ -598,9 +624,14 @@ const initialize_websocket = function() {
     case('beep'):
       handle_beep(data);
       break;
+
+    case('stats'):
+      handle_stats(data);
+      break;
     case('about'):
       let about = data;
       document.querySelector('#station-id').textContent = about.station_id;
+      document.querySelector('#software-start').textContent = moment(about.begin).format(DATE_FMT);
       document.querySelector('#serial').textContent = about.serial;
       document.querySelector('#hardware').textContent = about.hardware;
       document.querySelector('#revision').textContent = about.revision;
@@ -624,7 +655,7 @@ const initialize_websocket = function() {
       RAW_LOG.insertBefore(tr, RAW_LOG.firstChild.nextSibling);
       break;
     case('node-alive'):
-      handle_node_alive(data);
+      console.log(data);
       break;
     case('gps'):
       setText('lat', data.gps.lat.toFixed(6));
@@ -638,8 +669,7 @@ const initialize_websocket = function() {
       setText('nsats', `${n} of ${data.sky.satellites.length} used`);
       break;
     case('fw'):
-    console.log('FW', data);
-    document.querySelector('#raw_log').value += data.data
+      document.querySelector('#raw_log').value += data.data
     default:
       console.log('WTF dunno', data);
 
