@@ -16,6 +16,10 @@ router.get('/', function(req, res, next) {
   res.render('main', {title: 'CTT Sensor Station', message: 'pug' });
 });
 
+router.get('/update-station', function(req, res, next) {
+  res.render('station-update');
+});
+
 router.get('/crash', (req, res, next) => {
   // crash - bad variable
   throw(Error('throwing crash error'));
