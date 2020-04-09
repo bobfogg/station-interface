@@ -54,6 +54,10 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             td
               span(id="station-id")
           tr
+            th Station Image
+            td
+              span(id="station-image")
+          tr
             th Software Start
             td
               span(id="software-start")
@@ -114,6 +118,20 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             th Altitude
             td
               span(id="alt")
+        h2 Server Utilitites
+        table(class="table table-bordered table-sm table-dark")
+          tr
+            th Checkin
+            td
+              button(class="btn btn-sm btn-primary", id="server-checkin") Server Checkin
+          tr
+            th Diagnostics
+            td
+              button(class="btn btn-sm btn-primary", id="server-checkin") Server Diagnostics
+          tr
+            th Upload Files
+            td
+              button(class="btn btn-sm btn-primary", id="upload-files") Upload Files
 
     div(class="row")
       div(class="col-lg")

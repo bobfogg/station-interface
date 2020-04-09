@@ -630,7 +630,9 @@ const initialize_websocket = function() {
       break;
     case('about'):
       let about = data;
+      console.log(about);
       document.querySelector('#station-id').textContent = about.station_id;
+      document.querySelector('#station-image').textContent = about.station_image;
       document.querySelector('#software-start').textContent = moment(about.begin).format(DATE_FMT);
       document.querySelector('#serial').textContent = about.serial;
       document.querySelector('#hardware').textContent = about.hardware;
