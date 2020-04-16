@@ -5,7 +5,6 @@ let beep_hist = {};
 
 const DATE_FMT = 'YYYY-MM-DD HH:mm:ss';
 let socket;
-let sg_socket;
 
 const setText = function(tag, value) {
   let id = '#'+tag;
@@ -137,6 +136,17 @@ const initialize_controls = function() {
         alert('error saving sg deployment file '+err.toString());
       }
     });
+  });
+  document.querySelector('#server-checkin').addEventListener('click', function(evt) {
+    socket.send(JSON.stringify({
+      msg_type: 'cmd', 
+      cmd: 'checkin', 
+      data: {}
+    }));
+    document.querySelector('#server-checkin').setAttribute('disabled', true);
+    setTimeout(function() {
+      document.querySelector('#server-checkin').removeAttribute('disabled');
+    }, 5000)
   });
   document.querySelectorAll('button[name="delete-data"]').forEach((btn) => {
     btn.addEventListener('click', (evt) => {
@@ -570,32 +580,6 @@ const render_tag_hist = function() {
 };
 
 let RAW_LOG;
-const initialize_sg_socket = function () {
-  let url = 'ws://'+window.location.hostname+':8002';
-  sg_socket = new WebSocket(url);
-  sg_socket.addEventListener('close', function(evt) {
-    alert('SG server disconnected');
-  });
-  sg_socket.addEventListener('open', function() {
-  });
-  sg_socket.addEventListener('message', function(msg) {
-    let records = msg.data.split('\n');
-    records.forEach(function(record) {
-      let vals = record.split(',');
-      if (vals.length == 5) {
-        let sg_table = document.querySelector('#sg-data');
-        let tr = document.createElement('tr');
-        let dt = moment(new Date(parseInt(vals[1]*1000))).utc();
-        tr.appendChild(createElement(vals[0]));
-        tr.appendChild(createElement(dt.format(DATE_FMT)));
-        tr.appendChild(createElement(vals[2]));
-        tr.appendChild(createElement(vals[3]));
-        tr.appendChild(createElement(vals[4]));
-        sg_table.insertBefore(tr, sg_table.firstChild.nextSibling);
-      }
-    });
-  });
-};
 const updateStats = function() {
   socket.send(JSON.stringify({
     msg_type: 'cmd',
@@ -696,7 +680,6 @@ const updateChrony = function() {
 (function() {
   document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3000');
   initialize_websocket();
-  //initialize_sg_socket();
   initialize_controls();
   render_tag_hist();
   RAW_LOG = document.querySelector('#raw_log');
