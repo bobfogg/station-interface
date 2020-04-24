@@ -678,7 +678,7 @@ const updateChrony = function() {
 };
 
 (function() {
-  document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3000');
+  document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3010');
   initialize_websocket();
   initialize_controls();
   render_tag_hist();
