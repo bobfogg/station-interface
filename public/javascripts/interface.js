@@ -30,16 +30,13 @@ const clear = function() {
 };
 
 const initialize_controls = function() {
-  /*
   document.querySelector('#upload-files').addEventListener('click', function(evt) {
     socket.send(JSON.stringify({
       msg_type: 'cmd', 
       cmd: 'upload', 
-      data: {}
     }));
     document.querySelector('#upload-files').setAttribute('disabled', true);
   });
-  */
   document.querySelectorAll('button[name="toggle_node_radio"]').forEach((btn) => {
     btn.addEventListener('click', function(e) {
       let radio_id = e.target.getAttribute('value');

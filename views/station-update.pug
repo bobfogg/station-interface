@@ -4,8 +4,17 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     link(rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" type="text/css")
     link(rel="stylesheet" href="/highcharts/css/highcharts-dark-unica.css" type="text/css")
     link(rel="stylesheet" href="/stylesheets/style.css" type="text/css")
-  body(style="font-size:0.8em;background-color: #333; color: #D1FF00;")
+  body(style="font-size:0.8em;background-color: #333; color: #eee;")
     h1 Sensor Station Software Updater
-    pre(id="terminal" style="width=600px;min-height:600px;color:#ccc;font-family:courier;") 
-    button(class="btn btn-sm btn-danger" id="station-update") Update
+    h4 Console Messages
+    pre(id="terminal" style="border: 2px solid #ccc;width=600px;min-height:600px;color:#ccc;font-family:courier;") 
+    div This process will take a while to complete. Monitor the dialog box above after starting the update process.  You should see a message
+    div(style="padding: 5px;font-size:1.4em; font-family: courier;") Sensor Station Update Complete
+    div when it's finished.
+    <hr/>
+    div 
+      button(class="btn btn-sm btn-danger" id="station-update") Update Station
+    <hr>
+    div
+      a(class="btn btn-sm btn-primary" href="/") Back to Main Interface
     script(src="/javascripts/station-update.js")
