@@ -30,6 +30,7 @@ const clear = function() {
 };
 
 const initialize_controls = function() {
+  /*
   document.querySelector('#upload-files').addEventListener('click', function(evt) {
     socket.send(JSON.stringify({
       msg_type: 'cmd', 
@@ -38,6 +39,7 @@ const initialize_controls = function() {
     }));
     document.querySelector('#upload-files').setAttribute('disabled', true);
   });
+  */
   document.querySelectorAll('button[name="toggle_node_radio"]').forEach((btn) => {
     btn.addEventListener('click', function(e) {
       let radio_id = e.target.getAttribute('value');
@@ -289,17 +291,14 @@ const handle_beep = function(beep) {
         handle_tag_beep(format_beep(beep));
         break;
       case 'node_health':
-        console.log(beep);
         break;
       default:
-        console.log('unknown beep', beep);
         break;
     }
     return;
   }
   if (beep.data) {
     if (beep.data.node_alive) {
-      console.log(beep);
       return;
     }
     if (beep.data.node_beep) {
@@ -622,7 +621,6 @@ const initialize_websocket = function() {
       break;
     case('about'):
       let about = data;
-      console.log(about);
       document.querySelector('#station-id').textContent = about.station_id;
       document.querySelector('#station-image').textContent = about.station_image;
       document.querySelector('#software-start').textContent = moment(about.begin).format(DATE_FMT);
@@ -685,10 +683,44 @@ const updateChrony = function() {
   });
 };
 
+const get_config = function() {
+  $.ajax({
+    url: '/config',
+    success: function(contents) {
+      console.log('got config');
+      console.log(contents);
+      let i=0;
+      let radio_id, value;
+      contents.radios.forEach(function(radio) {
+        i++;
+        radio_id = "#config_radio_"+i;
+        switch (radio.config[0]) {
+          case "preset:node3":
+            value = "Node";
+            break;
+          case "preset:fsktag":
+            value = "Tag";
+            break;
+          case "preset:ooktag":
+            value = "Original Tag"
+            break;
+          default:
+            value = "Custom Mode"
+            break;
+        }
+        console.log('setting', radio_id, value);
+        document.querySelector(radio_id).textContent = value;
+      });
+       
+    }
+  })
+};
+
 (function() {
   document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3010');
   initialize_websocket();
   initialize_controls();
+  get_config();
   render_tag_hist();
   RAW_LOG = document.querySelector('#raw_log');
   updateChrony();
