@@ -116,7 +116,7 @@ router.get('/sg-data-rotated', function(req, res, next) {
 });
 
 router.get('/sg-data-uploaded', function(req, res, next) {
-  glob('/data/uploaded/sg/*.gz', (err, filelist) => {
+  glob('/data/uploaded/sg/*/*.gz', (err, filelist) => {
     if (filelist.length < 1) {
       res.send('Nothing to download yet');
       return;
@@ -146,7 +146,7 @@ router.get('/ctt-data-rotated', function(req, res, next) {
 });
 
 router.get('/ctt-data-uploaded', function(req, res, next) {
-  glob('/data/uploaded/ctt/*.gz', (err, filelist) => {
+  glob('/data/uploaded/ctt/*/*.gz', (err, filelist) => {
     if (filelist.length < 1) {
       res.send('Nothing to download yet');
       return;
@@ -265,6 +265,15 @@ router.post('/update', (req, res, next) => {
       });
     }
   });
+});
+
+router.get('/config', (req, res, next) => {
+  try {
+    let config = JSON.parse(fs.readFileSync(ConfigFileURI).toString());
+    res.json(config);
+  } catch (err) {
+    res.json({err: err.toString()});
+  }
 });
 
 module.exports = router;
