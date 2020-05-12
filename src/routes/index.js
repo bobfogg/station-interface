@@ -7,6 +7,7 @@ const moment = require('moment');
 const { spawn }  = require('child_process');
 const archiver = require('archiver');
 const bodyParser = require('body-parser');
+const fetch = require('node-fetch');
 
 const TMP_FILE = '/tmp/download.zip';
 const SG_DEPLOYMENT_FILE = '/data/sg_files/deployment.txt';
@@ -276,5 +277,21 @@ router.get('/config', (req, res, next) => {
     res.json({err: err.toString()});
   }
 });
+
+const HardwareRouter = (req, res, next) => {
+  let url = 'http://localhost:3000' + req.originalUrl;
+  fetch(url, { method: 'post'})
+    .then((hardware_response) => {
+      res.status(hardware_response.status).send();
+    })
+    .catch((err) => {
+      res.status(500).send('hardware proxy error');
+    });
+}
+
+router.post('/modem/start', HardwareRouter);
+router.post('/modem/stop', HardwareRouter);
+router.post('/modem/enable', HardwareRouter);
+router.post('/modem/disable', HardwareRouter);
 
 module.exports = router;

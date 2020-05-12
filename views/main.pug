@@ -128,11 +128,32 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             th Upload
             td
               button(class="btn btn-sm btn-primary", id="upload-files") Upload Data
-
           tr
             th Station Software Update
             td
               a(href="/update-station", class="btn btn-sm btn-primary") Station Update
+        h2 Modem Control
+        p When the modem is connected - this will always be the default route to the internet, even if you are plugged into a fast internet connection.  Use these controls to temporarily stop / start the modem.  It will still be active on the next reboot.
+        table(class="table table-bordered table-sm table-dark")
+          tr
+            th Temporarily Start modem
+            td
+              button(class="btn btn-sm btn-primary", id="start-modem") Start Modem
+          tr
+            th Temporarily Stop modem
+            td
+              button(class="btn btn-sm btn-primary", id="stop-modem") Stop Modem
+
+        p The controls below are for persistent modem control - starting or stopping the modem will persist through reboots and be permanent.
+        table(class="table table-bordered table-sm table-dark")
+          tr
+            th Permanently Enable modem
+            td
+              button(class="btn btn-sm btn-primary", id="enable-modem") Enable Modem
+          tr
+            th Permanently Disable modem
+            td
+              button(class="btn btn-sm btn-primary", id="disable-modem") Disable Modem
 
     div(class="row")
       div(class="col-lg")
@@ -382,4 +403,4 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     script(src="/javascripts/moment-with-locales.min.js")
     script(src="/bootstrap/dist/js/bootstrap.min.js")
     script(src="/highcharts/highcharts.js")
-    script(src="/javascripts/interface.js")
+    script(src="/javascripts/interface.js?v=1.0")
