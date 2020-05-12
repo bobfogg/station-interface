@@ -262,6 +262,11 @@ const format_beep = function(beep) {
         tag_id = beep.data.id;
         tag_at = beep_at;
       }
+      if (beep.meta.data_type == 'telemetry') {
+        tag_id = beep.meta.source.id;
+        rssi = beep.meta.rssi;
+        tag_at = moment(new Date(beep.data.time*1000));
+      }
     }
 
     if (beep.data.tag) {
@@ -337,6 +342,9 @@ const handle_beep = function(beep) {
         handle_tag_beep(format_beep(beep));
         break;
       case 'node_health':
+        break;
+      case 'telemetry':
+        handle_tag_beep(format_beep(beep));
         break;
       default:
         break;
