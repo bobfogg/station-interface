@@ -90,16 +90,18 @@ router.get('/ctt-data-current', (req, res, next) => {
 });
 
 router.get('/ctt-logfile', (req, res, next) => {
-  if (fs.existsSync(LOG_FILE)) {
-    prepareData([LOG_FILE]).then((prepare_result) => {
+  glob('/data/CTT-*-log.csv', (err, filelist) => {
+    if (filelist.length < 1) {
+      res.send('no log file to send');
+      return;
+    }
+    prepareData(filelist).then((prepare_result) => {
       let download_name = `ctt-log.${moment(new Date()).format('YYYY-MM-DD_HHMMSS')}.zip`;
       res.download(TMP_FILE, download_name);
     }).catch((err) => {
-      next(err);
+      res.send('error preparing ctt log files '+err);
     });
-  } else {
-    res.send('no log file to download');
-  }
+  });
 });
 
 router.get('/sg-data-rotated', function(req, res, next) {
