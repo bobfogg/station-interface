@@ -118,16 +118,6 @@ const initialize_controls = function() {
       }
     });
   });
-  document.querySelector('#save-radios').addEventListener('click', (evt) => {
-    let res = window.confirm('Are you sure you want to save the current radio configuration?');
-    if (res) {
-      socket.send(JSON.stringify({
-        msg_type: 'cmd',
-        cmd: 'save_radio',
-        data: {}
-      }));
-    }
-  });
   document.querySelectorAll('button[name="toggle_ook_radio"]').forEach((btn) => {
     btn.addEventListener('click', function(e) {
       let radio_id = e.target.getAttribute('value');
@@ -537,7 +527,6 @@ const render_nodes = function(reports) {
 const render_pie = function(id, data) {
   $(id).highcharts({
     chart: {
-      backgroundColor: '#FcFFC5',
       type: 'pie'
     },
     plotOptions: {
@@ -660,7 +649,7 @@ const initialize_websocket = function() {
   });
   socket.addEventListener('open', (event) => {
     updateStats();
-    setInterval(updateStats, 10000);
+    setInterval(updateStats, 15000);
   });
   socket.onmessage = function(msg) {
     let data = JSON.parse(msg.data);
