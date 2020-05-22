@@ -2,7 +2,6 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
   head
     title= title
     link(rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" type="text/css")
-    link(rel="stylesheet" href="/highcharts/css/highcharts-dark-unica.css" type="text/css")
     link(rel="stylesheet" href="/stylesheets/style.css" type="text/css")
   body(style="font-size:0.8em;background-color: #333; color: #D1FF00;")
     div(class="row")
@@ -331,9 +330,6 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
           div(class="col-sm")
             button(class="btn btn-block btn-sm btn-danger" name="toggle_ook_radio" value="5") OOK
 
-    div(style="height:5px;")
-    button(class="btn btn-block btn-primary", id="save-radios") Save Radio Configuration
-
     button(class="btn btn-block btn-primary", id="clear") Clear Session Data
     hr
     h2(style="text-align:center") Data Management
@@ -403,4 +399,5 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     script(src="/javascripts/moment-with-locales.min.js")
     script(src="/bootstrap/dist/js/bootstrap.min.js")
     script(src="/highcharts/highcharts.js")
+    script(src="/highcharts/themes/dark-unica.js")
     script(src="/javascripts/interface.js?v=1.0")
