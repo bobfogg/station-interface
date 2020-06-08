@@ -509,9 +509,10 @@ const render_nodes = function(reports) {
   }
   let report;
   let tr, td;
-  Object.keys(reports).forEach(function(node_id) {
+  Object.keys(reports).forEach(function(node_id, i) {
     report = reports[node_id];
     tr = document.createElement('tr');
+    tr.appendChild(createElement(i+1));
     tr.appendChild(createElement(node_id));
     tr.appendChild(createElement(moment(report.Time).format(DATE_FMT)));
     tr.appendChild(createElement(report.NodeRSSI));
