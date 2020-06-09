@@ -29,7 +29,48 @@ const clear = function() {
   });
 };
 
+const download_node_health = function() {
+  let lines = [];
+  let keys = [
+    'RecordedAt',
+    'NodeId',
+    'Battery',
+    'NodeRSSI',
+    'Latitude',
+    'Longitude',
+    'Firmware'
+  ];
+  lines.push(keys);
+  let record;
+  let node_health;
+  Object.keys(nodes).forEach(function(node_id) {
+    node_health = nodes[node_id];
+    node_health.NodeId = node_id;
+    record = [];
+    keys.forEach(function(key) {
+      record.push(node_health[key]);
+    });
+    lines.push(record);
+  });
+  try {
+    lines.unshift("data:text/csv;charset=utf-8,");
+    let csvContent = lines.join('\r\n');
+    let encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "node-report.csv");
+    document.body.appendChild(link); // Required for FF
+    link.click();
+  } catch(err) {
+    let csvContent = lines.join('\r\n');
+    navigator.msSaveBlob(new Blob([csvContent], {type: 'text/csv;charset=utf-8;' }), "node-report.csv");
+  }
+};
+
 const initialize_controls = function() {
+  document.querySelector('#download-nodes').addEventListener('click', function(evt) {
+    download_node_health();
+  });
   document.querySelector('#upload-files').addEventListener('click', function(evt) {
     socket.send(JSON.stringify({
       msg_type: 'cmd', 
@@ -447,6 +488,7 @@ const handle_stats = function(stats) {
   let received_at, old_received_at;
   let n = 0;
   let channel_stats = {}
+
   Object.keys(stats.channels).forEach(function(channel) {
     let channel_data = stats.channels[channel];
     Object.keys(channel_data.nodes.health).forEach(function(node_id) {
@@ -485,6 +527,7 @@ const handle_stats = function(stats) {
       telemetry_beeps: telemetry_beeps
     };
   });
+  nodes = reports;
   render_nodes(reports);
   render_channel_stats(channel_stats);
 };
@@ -691,7 +734,6 @@ const initialize_websocket = function() {
       RAW_LOG.insertBefore(tr, RAW_LOG.firstChild.nextSibling);
       break;
     case('node-alive'):
-      console.log(data);
       break;
     case('gps'):
       setText('lat', data.gps.lat.toFixed(6));
@@ -706,6 +748,7 @@ const initialize_websocket = function() {
       break;
     case('fw'):
       document.querySelector('#raw_log').value += data.data
+      break;
     default:
       console.log('WTF dunno', data);
 
@@ -731,8 +774,6 @@ const get_config = function() {
   $.ajax({
     url: '/config',
     success: function(contents) {
-      console.log('got config');
-      console.log(contents);
       let i=0;
       let radio_id, value;
       contents.radios.forEach(function(radio) {
