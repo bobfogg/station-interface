@@ -280,6 +280,21 @@ router.get('/config', (req, res, next) => {
   }
 });
 
+router.post('/radio-restart', (req, res) => {
+  const cmd  = spawn('/usr/local/bin/pm2', ['restart', 'station-radio-interface']); 
+  console.log('issuing radio restart')
+  cmd.on('error', (err) => {
+    console.error(error);
+    res.sendStatus(500)
+  })
+  cmd.stdout.on('data', (data) => {
+    console.log(data.toString())
+  })
+  cmd.on('close', () => {
+    res.sendStatus(204)
+  })
+})
+
 const HardwareRouter = (req, res, next) => {
   let url = 'http://localhost:3000' + req.originalUrl;
   fetch(url, { method: 'post'})

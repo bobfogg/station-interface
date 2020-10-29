@@ -68,6 +68,22 @@ const download_node_health = function() {
 };
 
 const initialize_controls = function() {
+  document.querySelector('#restart-radios').addEventListener('click', function(e) {
+    let result = confirm('Are you sure you want to restart the radio software?')
+    if (result) {
+      document.querySelector('#restart-radios').setAttribute('disabled', true)
+      $.ajax({
+        url: '/radio-restart',
+        method: 'post',
+        success: function(res) {
+          console.log(res)
+        },
+        error: function(err) {
+          alert('error restarting radio software')
+        }
+      })
+    }
+  });
   document.querySelector('#download-nodes').addEventListener('click', function(evt) {
     download_node_health();
   });
@@ -696,7 +712,7 @@ const initialize_websocket = function() {
   let url = 'ws://'+window.location.hostname+':8001';
   socket = new WebSocket(url);
   socket.addEventListener('close', (event) => {
-    alert('station connection disconnected');
+    alert('Station connection disconnected - you will need to restart your browser once the radio software has restarted');
   });
   socket.addEventListener('open', (event) => {
     updateStats();
