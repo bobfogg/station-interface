@@ -10,11 +10,15 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '../public')));
+app.use('/highcharts', express.static(path.join(__dirname, '../node_modules/highcharts')));
+app.use('/bootstrap', express.static(path.join(__dirname, '../node_modules/bootstrap')));
+app.use('/jquery', express.static(path.join(__dirname, '../node_modules/jquery')));
+app.use('/moment', express.static(path.join(__dirname, '../node_modules/moment')));
 
 app.use('/', indexRouter);
 
 app.use((req, res, next) => {
-  res.status(404).send('error 404;  does not compute');
+  res.sendStatus(404)
 });
 
 module.exports = app;

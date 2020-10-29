@@ -23,6 +23,7 @@
     "express": "^4.16.4",
     "glob": "^7.1.4",
     "highcharts": "^8.0.4",
+    "jquery": "^3.5.1",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "node-fetch": "^2.6.0",

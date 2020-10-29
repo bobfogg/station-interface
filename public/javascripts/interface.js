@@ -391,6 +391,7 @@ const handle_beep = function(beep) {
     }
   }
 };
+let DONGLES_ENABLED=false;
 
 const handle_tag_beep = function(beep) {
   let validated = false;
@@ -398,6 +399,12 @@ const handle_tag_beep = function(beep) {
   if (tag_id.length > 8) {
     tag_id = tag_id.slice(0,8);
     validated = true;
+  }
+  if (DONGLES_ENABLED == false) {
+    if (beep.channel > 5) {
+      DONGLES_ENABLED = true
+      document.querySelector('#dongles').style.display = 'block'
+    }
   }
   let BEEP_TABLE = document.querySelector('#radio_'+beep.channel);
   let tr = document.createElement('tr');
@@ -748,7 +755,7 @@ const initialize_websocket = function() {
       break;
     case('fw'):
       document.querySelector('#raw_log').value += data.data
-      break;
+      break
     default:
       console.log('WTF dunno', data);
 
@@ -793,7 +800,6 @@ const get_config = function() {
             value = "Custom Mode"
             break;
         }
-        console.log('setting', radio_id, value);
         document.querySelector(radio_id).textContent = value;
       });
        
@@ -801,8 +807,123 @@ const get_config = function() {
   })
 };
 
+const build_row = function(opts) {
+  let tr = document.createElement('tr')
+  let th = document.createElement('th')
+  let td = document.createElement('td')
+  th.textContent = opts.header 
+  span = document.createElement('span')
+  span.setAttribute('id', opts.id)
+  td.appendChild(span)
+  tr.appendChild(th)
+  tr.appendChild(td)
+  return tr
+};
+
+const build_radio_component = function(n) {
+  let wrapper = document.createElement('div')
+
+  let h2 = document.createElement('h2')
+  h2.setAttribute('style', 'text-align: center;')
+  h2.textContent = 'Radio '+n
+  wrapper.appendChild(h2)
+  let h5 = document.createElement('h5')
+  let span = document.createElement('span')
+  span.setAttribute('style', 'padding-right:5px;')
+  span.textContent = 'Current Mode:'
+  h5.appendChild(span)
+  span = document.createElement('span')
+  span.setAttribute('id', `config_radio_${n}`)
+  h5.appendChild(span)
+  wrapper.appendChild(h5)
+  let table = document.createElement('table')
+  table.setAttribute('class', 'table table-sm table-bordered table-dark')
+  table.setAttribute('id', `radio_stats_${n}`)
+  let row = build_row({n:n, header: 'Beeps', id: `beep_count_${n}`})
+  table.appendChild(row)
+  row = build_row({n:n, header: 'Nodes', id: `node_beep_count_${n}`})
+  table.appendChild(row)
+  row = build_row({n:n, header: 'Telemetry', id: `telemetry_beep_count_${n}`})
+  table.appendChild(row)
+  wrapper.appendChild(table)
+  let div = document.createElement('div')
+  div.setAttribute('style', 'overflow:scroll; height:400px;')
+  table = document.createElement('table')
+  table.setAttribute('class', 'table table-sm table-bordered table-dark radio')
+  table.setAttribute('id',`radio_${n}`)
+  tr = document.createElement('tr')
+  tr.setAttribute('class', 'table-primary')
+  tr.setAttribute('style', 'color:#111;')
+  th = document.createElement('th')
+  th.textContent = 'Time'
+  tr.appendChild(th)
+  th = document.createElement('th')
+  th.textContent = 'Tag ID'
+  tr.appendChild(th)
+  th = document.createElement('th')
+  th.textContent = 'RSSI'
+  tr.appendChild(th)
+  th = document.createElement('th')
+  th.textContent = 'Node'
+  tr.appendChild(th)
+  table.appendChild(tr)
+  div.appendChild(table)
+  wrapper.appendChild(div)
+
+  div = document.createElement('div')
+  div.setAttribute('class', 'row')
+
+  let col_sm = document.createElement('div')
+  col_sm.setAttribute('class', 'col-sm')
+  let button = document.createElement('button')
+  button.setAttribute('class', 'btn btn-block btn-sm btn-danger')
+  button.setAttribute('name', 'toggle_node_radio')
+  button.setAttribute('value', n)
+  button.textContent = 'Node'
+  col_sm.appendChild(button)
+  div.appendChild(col_sm)
+
+  col_sm = document.createElement('div')
+  col_sm.setAttribute('class', 'col-sm')
+  button = document.createElement('button')
+  button.setAttribute('class', 'btn btn-block btn-sm btn-danger')
+  button.setAttribute('name', 'toggle_tag_radio')
+  button.setAttribute('value', n)
+  button.textContent = 'Tag'
+  col_sm.appendChild(button)
+  div.appendChild(col_sm)
+
+  col_sm = document.createElement('div')
+  col_sm.setAttribute('class', 'col-sm')
+  button = document.createElement('button')
+  button.setAttribute('class', 'btn btn-block btn-sm btn-danger')
+  button.setAttribute('name', 'toggle_ook_radio')
+  button.setAttribute('value', n)
+  button.textContent = 'OOK'
+  col_sm.appendChild(button)
+  div.appendChild(col_sm)
+  wrapper.appendChild(div)
+
+  return wrapper
+};
+
 (function() {
   document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3010');
+  let component, col
+  for (let i=1; i<=5; i++) {
+    component = build_radio_component(i)
+    col = document.createElement('div')
+    col.classList.add('col-lg')
+    col.appendChild(component)
+    document.querySelector('#main-radios').appendChild(col)
+  }
+  for (let i=6; i<=12; i++) {
+    component = build_radio_component(i)
+    col = document.createElement('div')
+    col.classList.add('col-lg')
+    col.appendChild(component)
+    document.querySelector('#extra-radios').appendChild(col)
+  }
   initialize_websocket();
   initialize_controls();
   get_config();

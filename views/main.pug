@@ -156,182 +156,11 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             td
               button(class="btn btn-sm btn-primary", id="disable-modem") Disable Modem
 
-    div(class="row")
-      div(class="col-lg")
-        h2(style="text-align:center;") Radio 1
-        h5 
-          span(style="padding-right:5px;") Current Mode:
-          span(id="config_radio_1")
-        table(class="table table-sm table-bordered table-dark", id="radio_stats_1")
-          tr
-            th Beeps
-            td
-              span(id="beep_count_1")
-          tr
-            th Nodes
-            td
-              span(id="node_beep_count_1")
-          tr
-            th Telemetry
-            td
-              span(id="telemetry_beep_count_1")
+    div(class="row", id="main-radios")
 
-
-        div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark radio", id="radio_1")
-            tr(class="table-primary", style="color: #111;")
-              th Time
-              th Tag ID
-              th RSSI
-              th Node
-        div(class="row")
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="1") Node
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="1") Tag
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_ook_radio" value="1") OOK
-
-      div(class="col-lg")
-        h2(style="text-align:center;")  Radio 2
-        h5 
-          span(style="padding-right:5px;") Current Mode:
-          span(id="config_radio_2")
-        table(class="table table-sm table-bordered table-dark", id="radio_stats_2")
-          tr
-            th Beeps
-            td
-              span(id="beep_count_2")
-          tr
-            th Nodes
-            td
-              span(id="node_beep_count_2")
-          tr
-            th Telemetry
-            td
-              span(id="telemetry_beep_count_2")
-
-
-        div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark radio", id="radio_2")
-            tr(class="table-primary", style="color: #111;")
-              th Time
-              th Tag ID
-              th RSSI
-              th Node
-        div(class="row")
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="2") Node
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="2") Tag
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_ook_radio" value="2") OOK
-
-      div(class="col-lg")
-        h2(style="text-align:center;")  Radio 3
-        h5 
-          span(style="padding-right:5px;") Current Mode:
-          span(id="config_radio_3")
-        table(class="table table-sm table-bordered table-dark", id="radio_stats_3")
-          tr
-            th Beeps
-            td
-              span(id="beep_count_3")
-          tr
-            th Nodes
-            td
-              span(id="node_beep_count_3")
-          tr
-            th Telemetry
-            td
-              span(id="telemetry_beep_count_3")
-
-
-        div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark radio", id="radio_3")
-            tr(class="table-primary", style="color: #111;")
-              th Time
-              th Tag ID
-              th RSSI
-              th Node
-        div(class="row")
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="3") Node
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="3") Tag
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_ook_radio" value="3") OOK
-
-      div(class="col-lg")
-        h2(style="text-align:center;")  Radio 4
-        h5 
-          span(style="padding-right:5px;") Current Mode:
-          span(id="config_radio_4")
-        table(class="table table-sm table-bordered table-dark", id="radio_stats_4")
-          tr
-            th Beeps
-            td
-              span(id="beep_count_4")
-          tr
-            th Nodes
-            td
-              span(id="node_beep_count_4")
-          tr
-            th Telemetry
-            td
-              span(id="telemetry_beep_count_4")
-
-
-        div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark radio", id="radio_4")
-            tr(class="table-primary", style="color: #111;")
-              th Time
-              th Tag ID
-              th RSSI
-              th Node
-        div(class="row")
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="4") Node
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="4") Tag
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_ook_radio" value="4") OOK
-
-      div(class="col-lg")
-        h2(style="text-align:center;")  Radio 5
-        h5 
-          span(style="padding-right:5px;") Current Mode:
-          span(id="config_radio_5")
-        table(class="table table-sm table-bordered table-dark", id="radio_stats_5")
-          tr
-            th Beeps
-            td
-              span(id="beep_count_5")
-          tr
-            th Nodes
-            td
-              span(id="node_beep_count_5")
-          tr
-            th Telemetry
-            td
-              span(id="telemetry_beep_count_5")
-
-
-        div(style="overflow: scroll; height:400px;")
-          table(class="table table-sm table-bordered table-dark radio", id="radio_5")
-            tr(class="table-primary", style="color: #111;")
-              th Time
-              th Tag ID
-              th RSSI
-              th Node
-        div(class="row")
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_node_radio" value="5") Node
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_tag_radio" value="5") Tag
-          div(class="col-sm")
-            button(class="btn btn-block btn-sm btn-danger" name="toggle_ook_radio" value="5") OOK
-
+    div(class="row", id="dongles", style="display:none;")
+      div(style="font-size:2em;font-weight:bold;text-align:center;border-bottom:2px solid #ccc;") Dongle Radios
+      div(id="extra-radios", class="row")
     button(class="btn btn-block btn-primary", id="clear") Clear Session Data
     hr
     h2(style="text-align:center") Data Management
@@ -397,9 +226,9 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     div(class="row")
       button(class="btn btn-danger" id="reboot") Reboot
 
-    script(src="/javascripts/jquery-3.4.1.min.js")
-    script(src="/javascripts/moment-with-locales.min.js")
+    script(src="/jquery/dist/jquery.min.js")
+    script(src="/moment/min/moment-with-locales.min.js")
     script(src="/bootstrap/dist/js/bootstrap.min.js")
     script(src="/highcharts/highcharts.js")
     script(src="/highcharts/themes/dark-unica.js")
-    script(src="/javascripts/interface.js?v=1.1")
+    script(src="/javascripts/interface.js?v=1.11")
