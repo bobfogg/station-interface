@@ -295,6 +295,22 @@ router.post('/radio-restart', (req, res) => {
   })
 })
 
+/**
+ * 
+ * get software versions from package.json data
+ */
+router.get('/software', (req, res) => {
+  fetch('http://localhost:3000/node/version')
+  .then(res => res.json())
+  .then((json) => {
+    res.json(json)
+  })
+  .catch((err) => {
+    console.error(err)
+    res.sendStatus(500)
+  })
+})
+
 const HardwareRouter = (req, res, next) => {
   let url = 'http://localhost:3000' + req.originalUrl;
   fetch(url, { method: 'post'})

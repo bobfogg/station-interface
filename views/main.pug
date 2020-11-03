@@ -55,10 +55,6 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             td
               span(id="station-id")
           tr
-            th Station Image
-            td
-              span(id="station-image")
-          tr
             th Software Start
             td
               span(id="software-start")
@@ -86,6 +82,13 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             th Last Boot
             td
               span(id="uptime")
+        h2 System Versioning Details
+        table(class="table table-sm table-bordered table-dark", id="meta")
+          tr
+            th Station Image
+            td
+              span(id="station-image")
+
         div(class="row")
           div(class="col-sm")
             h3 Memory Usage
@@ -157,7 +160,11 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
               button(class="btn btn-sm btn-primary", id="disable-modem") Disable Modem
         h2 Radio Software Control
         p You can restart the radio software with this control, which will require a page refresh after it is complete.
-        button(class="btn btn-sm btn-primary", id="restart-radios") Restart Radio Software
+        table(class="table table-bordered table-sm table-dark")
+          tr
+            th Radio Data Server Restart
+            td
+              button(class="btn btn-sm btn-primary", id="restart-radios") Restart Radio Software
 
     div(class="row", id="main-radios")
 

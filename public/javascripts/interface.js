@@ -923,9 +923,33 @@ const build_radio_component = function(n) {
   return wrapper
 };
 
+const initialize_software_versions = function() {
+  fetch('/software')
+  .then(res=>res.json())
+  .then((json) => {
+    let table = document.querySelector('#meta')
+    let tr, th, td
+    json.packages.forEach((version) => {
+      tr = document.createElement('tr')
+      th = document.createElement('th')
+      th.textContent = version.name
+      tr.appendChild(th)
+      td = document.createElement('td')
+      td.textContent = version.version
+      tr.appendChild(td)
+      table.appendChild(tr)
+    })
+  })
+  .catch((err) => {
+    console.error('error getting software version')
+    console.error(err)
+  })
+};
+
 (function() {
   document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3010');
   let component, col
+  initialize_software_versions()
   for (let i=1; i<=5; i++) {
     component = build_radio_component(i)
     col = document.createElement('div')
