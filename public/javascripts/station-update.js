@@ -22,12 +22,15 @@ const initialize_websocket = function() {
 
 const init = function() {
   document.querySelector('#station-update').addEventListener('click', function(e) {
-    console.log('issuing update command');
-    document.querySelector('#station-update').setAttribute('disabled', true);
-    socket.send(JSON.stringify({
-      cmd: 'update-station',
-      msg_type: 'cmd'
-    }));
+    res = confirm('Are you sure you want to run the station updater?  This requires a steady internet connection and a few minutes to complete.')
+    if (res) {
+      console.log('issuing update command');
+      document.querySelector('#station-update').setAttribute('disabled', true);
+      socket.send(JSON.stringify({
+        cmd: 'update-station',
+        msg_type: 'cmd'
+      }));
+    }
   });
 };
 
