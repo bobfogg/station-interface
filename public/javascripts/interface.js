@@ -155,6 +155,7 @@ const initialize_controls = function() {
       let radio_id = e.target.getAttribute('value');
       let res = window.confirm('Are you sure you want to toggle NODE listening mode for radio '+radio_id+'?');
       if (res) {
+        document.querySelector(`#config_radio_${radio_id}`).textContent = 'Node'
         socket.send(JSON.stringify({
           msg_type: 'cmd', 
           cmd: 'toggle_radio', 
@@ -171,6 +172,7 @@ const initialize_controls = function() {
       let radio_id = e.target.getAttribute('value');
       let res = window.confirm('Are you sure you want to toggle TAG listening mode for radio '+radio_id+'?');
       if (res) {
+        document.querySelector(`#config_radio_${radio_id}`).textContent = 'Tag'
         socket.send(JSON.stringify({
           msg_type: 'cmd', 
           cmd: 'toggle_radio', 
@@ -187,6 +189,7 @@ const initialize_controls = function() {
       let radio_id = e.target.getAttribute('value');
       let res = window.confirm('Are you sure you want to toggle OOK listening mode for radio '+radio_id+'?');
       if (res) {
+        document.querySelector(`#config_radio_${radio_id}`).textContent = 'OOK'
         socket.send(JSON.stringify({
           msg_type: 'cmd', 
           cmd: 'toggle_radio', 
