@@ -311,6 +311,21 @@ router.get('/software', (req, res) => {
   })
 })
 
+/**
+ * proxy to hardware server to get internet gateway
+ */
+router.get('/internet-gateway', (req, res) => {
+  fetch('http://localhost:3000/internet/gateway')
+  .then(res=>res.json())
+  .then((json) => {
+    res.json(json)
+  })
+  .catch((err) => {
+    console.error(err)
+    res.sendStatus(500)
+  })
+})
+
 const HardwareRouter = (req, res, next) => {
   let url = 'http://localhost:3000' + req.originalUrl;
   fetch(url, { method: 'post'})

@@ -974,8 +974,22 @@ const initialize_software_versions = function() {
   })
 };
 
-(function() {
+const render_gateway = function() {
+  fetch('/internet-gateway')
+  .then(function(res) { return res.json()})
+  .then(function(json) {
+    document.querySelector('#internet-gateway').textContent = json.route
+  })
+  .catch(function(err) {
+    console.error('error rendering gateway')
+    console.error(err)
+  })
+}
+
+;(function() {
   document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3010');
+  render_gateway()
+  setInterval(render_gateway, 5000)
   let component, col
   let max_row_count = localStorage.getItem('max-row-count')
   if (max_row_count) {
