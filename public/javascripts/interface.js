@@ -68,6 +68,13 @@ const download_node_health = function() {
 };
 
 const initialize_controls = function() {
+  document.querySelector('#max-row-count').value = MAX_ROW_COUNT
+  document.querySelector('#update-max-row-count').addEventListener('click', function(e) {
+    MAX_ROW_COUNT = document.querySelector('#max-row-count').value
+    localStorage.setItem('max-row-count', MAX_ROW_COUNT)
+    clip_beep_tables()
+  })
+
   document.querySelector('#restart-radios').addEventListener('click', function(e) {
     let result = confirm('Are you sure you want to restart the radio software?')
     if (result) {
@@ -408,6 +415,20 @@ const handle_beep = function(beep) {
   }
 };
 let DONGLES_ENABLED=false;
+let MAX_ROW_COUNT = 1000;
+
+const clip_beep_tables = function() {
+  let children
+  document.querySelectorAll('.radio').forEach(function(table) {
+    children = []
+    table.childNodes.forEach(function(child) {
+      children.push(child)
+    })
+    children.slice(MAX_ROW_COUNT, table.children.length).forEach(function(child) {
+      table.removeChild(child)
+    })
+  })
+}
 
 const handle_tag_beep = function(beep) {
   let validated = false;
@@ -440,6 +461,10 @@ const handle_tag_beep = function(beep) {
   }
   tr.appendChild(createElement(beep.rssi));
   tr.appendChild(createElement(beep.node_id));
+  // remove last beep record if table exceeds max row count
+  if (BEEP_TABLE.children.length > MAX_ROW_COUNT) {
+    BEEP_TABLE.removeChild(BEEP_TABLE.lastElementChild)
+  }
   BEEP_TABLE.insertBefore(tr, BEEP_TABLE.firstChild.nextSibling);
   beeps.push(beep);
   let beep_count = beep_hist[tag_id];
@@ -949,6 +974,12 @@ const initialize_software_versions = function() {
 (function() {
   document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3010');
   let component, col
+  let max_row_count = localStorage.getItem('max-row-count')
+  if (max_row_count) {
+    MAX_ROW_COUNT = max_row_count
+  } else {
+    localStorage.setItem('max-row-count', MAX_ROW_COUNT)
+  }
   initialize_software_versions()
   for (let i=1; i<=5; i++) {
     component = build_radio_component(i)

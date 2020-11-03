@@ -127,51 +127,65 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
           tr
             th Checkin
             td
-              button(class="btn btn-sm btn-primary", id="server-checkin") Server Checkin
+              button(class="btn btn-sm btn-primary btn-block", id="server-checkin") Server Checkin
           tr
             th Upload
             td
-              button(class="btn btn-sm btn-primary", id="upload-files") Upload Data
+              button(class="btn btn-sm btn-primary btn-block", id="upload-files") Upload Data
           tr
             th Station Software Update
             td
-              a(href="/update-station", class="btn btn-sm btn-primary") Station Update
+              a(href="/update-station", class="btn btn-sm btn-primary btn-block") Station Update
         h2 Modem Control
         p When the modem is connected - this will always be the default route to the internet, even if you are plugged into a fast internet connection.  Use these controls to temporarily stop / start the modem.  It will still be active on the next reboot.
         table(class="table table-bordered table-sm table-dark")
           tr
             th Temporarily Start modem
             td
-              button(class="btn btn-sm btn-primary", id="start-modem") Start Modem
+              button(class="btn btn-sm btn-primary btn-block", id="start-modem") Start Modem
           tr
             th Temporarily Stop modem
             td
-              button(class="btn btn-sm btn-primary", id="stop-modem") Stop Modem
+              button(class="btn btn-sm btn-primary btn-block", id="stop-modem") Stop Modem
 
         p The controls below are for persistent modem control - starting or stopping the modem will persist through reboots and be permanent.
         table(class="table table-bordered table-sm table-dark")
           tr
             th Permanently Enable modem
             td
-              button(class="btn btn-sm btn-primary", id="enable-modem") Enable Modem
+              button(class="btn btn-sm btn-primary btn-block", id="enable-modem") Enable Modem
           tr
             th Permanently Disable modem
             td
-              button(class="btn btn-sm btn-primary", id="disable-modem") Disable Modem
+              button(class="btn btn-sm btn-primary btn-block", id="disable-modem") Disable Modem
         h2 Radio Software Control
         p You can restart the radio software with this control, which will require a page refresh after it is complete.
         table(class="table table-bordered table-sm table-dark")
           tr
             th Radio Data Server Restart
+            td(colspan=2)
+              button(class="btn btn-sm btn-primary btn-block", id="restart-radios") Restart Radio Software
+        h2 Display Control
+        p Limit radio tables to a set number of rows.
+        table(class="table table-bordered table-sm table-dark")
+          tr
+            th Max Row Count
             td
-              button(class="btn btn-sm btn-primary", id="restart-radios") Restart Radio Software
+              input(type="number",value="10000",id="max-row-count", class="form-control")
+            td
+              button(type="button",class="btn btn-sm btn-danger btn-block", id="update-max-row-count") Update
+          tr
+            th Reset radio tag data tables.
+            td(colspan=2)
+              button(class="btn btn-block btn-primary btn-block", id="clear") Clear 
+
+
 
     div(class="row", id="main-radios")
 
     div(class="row", id="dongles", style="display:none;")
       div(style="font-size:2em;font-weight:bold;text-align:center;border-bottom:2px solid #ccc;") Dongle Radios
       div(id="extra-radios", class="row")
-    button(class="btn btn-block btn-primary", id="clear") Clear Session Data
     hr
     h2(style="text-align:center") Data Management
     div(class="row")
@@ -241,4 +255,4 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
     script(src="/bootstrap/dist/js/bootstrap.min.js")
     script(src="/highcharts/highcharts.js")
     script(src="/highcharts/themes/dark-unica.js")
-    script(src="/javascripts/interface.js?v=1.11")
+    script(src="/javascripts/interface.js?v=1.12")
