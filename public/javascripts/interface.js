@@ -83,7 +83,7 @@ const initialize_controls = function() {
         url: '/radio-restart',
         method: 'post',
         success: function(res) {
-          console.log(res)
+          alert('Radio server has been restarted - you will need to refresh the page.')
         },
         error: function(err) {
           alert('error restarting radio software')
@@ -978,7 +978,7 @@ const render_gateway = function() {
   fetch('/internet-gateway')
   .then(function(res) { return res.json()})
   .then(function(json) {
-    document.querySelector('#internet-gateway').textContent = json.route
+    document.querySelector('#internet-gateway').textContent = json.gateway
   })
   .catch(function(err) {
     console.error('error rendering gateway')
@@ -986,9 +986,82 @@ const render_gateway = function() {
   })
 }
 
+const initialize_reboot = function() {
+  let dom_select = document.querySelector('#reboot-dom')
+  let values = [{
+    value: '*',
+    name: 'Any Day Of Month'
+  }]
+  for (let i=1; i<32; i++) {
+    values.push({
+      value: i,
+      name: i.toString()
+    })
+  }
+  values.forEach(function(value) {
+    let opt = document.createElement('option')
+    opt.setAttribute('value', value.value)
+    opt.textContent = value.name
+    dom_select.appendChild(opt)
+  })
+
+  document.querySelector('#reboot-hour').addEventListener('change', function(e) {
+    if (e.target.value > 23) {
+      e.target.value = 23
+    }
+    if (e.target.value < 0) {
+      e.target.value = 0
+    }
+  })
+
+  document.querySelector('#reboot-minute').addEventListener('change', function(e) {
+    if (e.target.value > 59) {
+      e.target.value = 59 
+    }
+    if (e.target.value < 0) {
+      e.target.value = 0
+    }
+  })
+
+  document.querySelector('#update-reboot-schedule').addEventListener('click', function(e) {
+    e.target.setAttribute('disabled', true)
+    let body = {
+      hour: document.querySelector('#reboot-hour').value,
+      minute: document.querySelector('#reboot-minute').value,
+      dom: document.querySelector('#reboot-dom').value,
+      mon: '*',
+      dow: document.querySelector('#reboot-dow').value
+    }
+    fetch('/update-reboot-schedule', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    })
+    .then(function(res) {
+      if (res.ok) {
+        alert('Reboot schedule successfully updated')
+        e.target.removeAttribute('disabled')
+      } else {
+        console.log(res)
+        console.error('invalid response', res.status)
+      }
+    })
+  })
+
+  fetch('/reboot-schedule')
+  .then(function(req) { return req.json() })
+  .then(function(json) {
+    document.querySelector('#reboot-hour').value = json.h
+    document.querySelector('#reboot-minute').value = json.m
+    document.querySelector('#reboot-dow').value = json.dow
+    document.querySelector('#reboot-dom').value = json.dom
+  })
+}
+
 ;(function() {
   document.querySelector('#sg_link').setAttribute('href', 'http://'+window.location.hostname+':3010');
   render_gateway()
+  initialize_reboot()
   setInterval(render_gateway, 5000)
   let component, col
   let max_row_count = localStorage.getItem('max-row-count')

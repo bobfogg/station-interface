@@ -182,8 +182,37 @@ html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
             th Reset radio tag data tables.
             td(colspan=2)
               button(class="btn btn-block btn-primary btn-block", id="clear") Clear 
-
-
+        h2 Reboot Control
+        p Specify reboot schedule
+        table(class="table table-bordered table-sm table-dark")
+          tr
+            th Checkin Time
+            td
+              span
+                input(class="time", id="reboot-hour", type="number", style="width:3em;") 
+              span :
+              span
+                input(class="time", id="reboot-minute", type="number", style="width:3em;")
+              span UTC
+          tr
+            th Weekly
+            td
+              select(class="form-control", id="reboot-dow")
+                option(value='*') Every Day
+                option(value='0') Sunday
+                option(value='1') Monday
+                option(value='2') Tuesday
+                option(value='3') Wednsday
+                option(value='4') Thursday
+                option(value='5') Friday 
+                option(value='6') Saturday
+          tr
+            th Specify Day Of Month
+            td
+              select(class="form-control", id="reboot-dom")
+          tr
+            td(colspan=2)
+              button(class="btn btn-danger btn-sm btn-block", id="update-reboot-schedule") Update Reboot Schedule
 
     div(class="row", id="main-radios")
 
